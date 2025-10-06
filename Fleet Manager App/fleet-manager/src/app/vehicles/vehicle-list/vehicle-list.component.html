@@ -1,0 +1,10 @@
+<div class="vehicle-list">
+  <h2>Vehicles</h2>
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+  <ul>
+    <li *ngFor="let vehicle of vehicles">
+      {{ vehicle.name }}
+      <button (click)="deleteVehicle(vehicle.id)">Delete</button>
+    </li>
+  </ul>
+</div>
