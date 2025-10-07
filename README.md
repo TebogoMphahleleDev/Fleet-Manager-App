@@ -19,15 +19,15 @@ A full-stack web application designed to manage vehicles, drivers, trips, and ma
 | Phase 2 | Authentication | ✅ Completed | Implemented secure JWT authentication with route protection. |
 | Phase 3 | Vehicle Management | ✅ Completed | Added CRUD operations, vehicle forms, and RESTful API integration. |
 | Phase 4 | Driver Management | ✅ Completed | Developed driver CRUD, validation, and vehicle assignment. |
-| Phase 5 | Trip Management | ⏳ Planned | Will handle trip scheduling, cost tracking, and progress updates. |
+| Phase 5 | Trip Management | ✅ Completed | Implemented trip scheduling with double-booking prevention for drivers and vehicles. |
 | Phase 6 | Maintenance Tracking | ⏳ Planned | Will manage service schedules and maintenance logs. |
 | Phase 7 | Dashboard | ⏳ Planned | Will visualize key data with charts and summaries. |
 | Phase 8 | Deployment | ⏳ Planned | Will focus on hosting, CI/CD, and performance optimization. |
 
 ## 📊 Current Progress
-- Completed: 4 / 8 Phases (50%)
+- Completed: 5 / 8 Phases (62.5%)
 - In Progress: 0 / 8 Phases (0%)
-- Pending: 4 / 8 Phases (50%)
+- Pending: 3 / 8 Phases (37.5%)
 
 ## 🛠 Tech Stack
 
@@ -104,11 +104,10 @@ uvicorn main:app --reload
 - Environment variable and configuration management.
 
 ## 🎯 Current Development Focus
-- Completed Driver Management Module
-- Next: Trip Management Module
+- Completed Trip Management Module
+- Next: Maintenance Tracking Module
 
 ## 🪄 Upcoming Features
-- Trip planning with vehicle availability checks.
 - Maintenance schedule automation.
 - Dashboard with analytics and visualizations.
 - Application deployment (frontend + backend).
@@ -117,11 +116,11 @@ uvicorn main:app --reload
 "Write every line with understanding. Build projects that teach, not just work."
 
 ## 📅 Project Timeline
-- This Week: Begin Trip Management.
-- Next Week: Complete Trip Management and start Maintenance Tracking.
-- Following Weeks: Add dashboard and deployment modules.
+- This Week: Begin Maintenance Tracking.
+- Next Week: Complete Maintenance Tracking and start Dashboard.
+- Following Weeks: Add deployment modules.
 - Final Stage: Performance optimization and testing.
 
 **Status:** Active Development  
-**Last Updated:** October 6, 2025  
-**Progress:** 4 / 8 Phases Completed (50%)
+**Last Updated:** October 7, 2025  
+**Progress:** 5 / 8 Phases Completed (62.5%)
