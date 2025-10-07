@@ -1,0 +1,14 @@
+<div class="vehicle-form">
+  <h2>{{ vehicleId ? 'Edit Vehicle' : 'Add Vehicle' }}</h2>
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+  <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="name">Name:</label>
+      <input id="name" formControlName="name" />
+      <div *ngIf="vehicleForm.get('name')?.invalid && vehicleForm.get('name')?.touched" class="error">
+        Name is required.
+      </div>
+    </div>
+    <button type="submit" [disabled]="vehicleForm.invalid">{{ vehicleId ? 'Update' : 'Add' }}</button>
+  </form>
+</div>
