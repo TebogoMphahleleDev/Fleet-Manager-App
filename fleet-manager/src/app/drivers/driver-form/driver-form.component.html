@@ -1,0 +1,21 @@
+<div class="driver-form">
+  <h2>{{ driverId ? 'Edit Driver' : 'Add Driver' }}</h2>
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+  <form [formGroup]="driverForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="name">Name:</label>
+      <input id="name" formControlName="name" />
+      <div *ngIf="driverForm.get('name')?.invalid && driverForm.get('name')?.touched" class="error">
+        Name is required.
+      </div>
+    </div>
+    <div>
+      <label for="vehicle">Assign Vehicle:</label>
+      <select id="vehicle" formControlName="vehicle_id">
+        <option value="">None</option>
+        <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">{{ vehicle.name }}</option>
+      </select>
+    </div>
+    <button type="submit" [disabled]="driverForm.invalid">{{ driverId ? 'Update' : 'Add' }}</button>
+  </form>
+</div>

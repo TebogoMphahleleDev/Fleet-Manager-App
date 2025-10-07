@@ -1,0 +1,10 @@
+<div class="driver-list">
+  <h2>Drivers</h2>
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+  <ul>
+    <li *ngFor="let driver of drivers">
+      {{ driver.name }} - Vehicle ID: {{ driver.vehicle_id || 'None' }}
+      <button (click)="deleteDriver(driver.id)">Delete</button>
+    </li>
+  </ul>
+</div>

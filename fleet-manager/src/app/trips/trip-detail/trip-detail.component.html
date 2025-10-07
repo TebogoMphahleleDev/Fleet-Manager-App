@@ -1,0 +1,12 @@
+<div class="trip-detail" *ngIf="trip">
+  <h2>Trip Details</h2>
+  <p><strong>Driver ID:</strong> {{ trip.driver_id }}</p>
+  <p><strong>Vehicle ID:</strong> {{ trip.vehicle_id }}</p>
+  <p><strong>Start Location:</strong> {{ trip.start_location }}</p>
+  <p><strong>End Location:</strong> {{ trip.end_location }}</p>
+  <p><strong>Start Time:</strong> {{ trip.start_time }}</p>
+  <p><strong>End Time:</strong> {{ trip.end_time }}</p>
+  <button (click)="deleteTrip()">Delete Trip</button>
+  <a [routerLink]="['/trips/form', trip.id]">Edit</a>
+</div>
+<p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
