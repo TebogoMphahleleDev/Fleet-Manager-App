@@ -28,7 +28,7 @@ class Vehicle(Base):
     __tablename__ = "vehicles"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    # Add more fields as needed, e.g., model, year, etc.
+    # more fields to be added
 
 class Driver(Base):
     __tablename__ = "drivers"
