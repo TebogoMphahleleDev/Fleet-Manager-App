@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
@@ -29,6 +30,12 @@ class Vehicle(Base):
     name = Column(String, index=True)
     # Add more fields as needed, e.g., model, year, etc.
 
+class Driver(Base):
+    __tablename__ = "drivers"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    vehicle_id = Column(Integer, nullable=True)
+
 Base.metadata.create_all(bind=engine)
 
 # Pydantic models
@@ -37,6 +44,14 @@ class VehicleCreate(BaseModel):
 
 class VehicleUpdate(BaseModel):
     name: str
+
+class DriverCreate(BaseModel):
+    name: str
+    vehicle_id: Optional[int] = None
+
+class DriverUpdate(BaseModel):
+    name: str
+    vehicle_id: Optional[int] = None
 
 # Security
 SECRET_KEY = "your_secret_key_here_change_this"
@@ -138,3 +153,36 @@ def delete_vehicle(vehicle_id: int, db: Session = Depends(get_db)):
     db.delete(db_vehicle)
     db.commit()
     return {"detail": "Vehicle deleted"}
+
+@app.get("/drivers")
+def get_drivers(db: Session = Depends(get_db)):
+    drivers = db.query(Driver).all()
+    return drivers
+
+@app.post("/drivers")
+def create_driver(driver: DriverCreate, db: Session = Depends(get_db)):
+    db_driver = Driver(name=driver.name, vehicle_id=driver.vehicle_id)
+    db.add(db_driver)
+    db.commit()
+    db.refresh(db_driver)
+    return db_driver
+
+@app.put("/drivers/{driver_id}")
+def update_driver(driver_id: int, driver: DriverUpdate, db: Session = Depends(get_db)):
+    db_driver = db.query(Driver).filter(Driver.id == driver_id).first()
+    if not db_driver:
+        raise HTTPException(status_code=404, detail="Driver not found")
+    db_driver.name = driver.name
+    db_driver.vehicle_id = driver.vehicle_id
+    db.commit()
+    db.refresh(db_driver)
+    return db_driver
+
+@app.delete("/drivers/{driver_id}")
+def delete_driver(driver_id: int, db: Session = Depends(get_db)):
+    db_driver = db.query(Driver).filter(Driver.id == driver_id).first()
+    if not db_driver:
+        raise HTTPException(status_code=404, detail="Driver not found")
+    db.delete(db_driver)
+    db.commit()
+    return {"detail": "Driver deleted"}
