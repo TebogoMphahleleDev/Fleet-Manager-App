@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { VehicleService, Vehicle } from '../../services/vehicle.service';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-vehicle-list',
   templateUrl: './vehicle-list.component.html',
-  styleUrls: ['./vehicle-list.component.scss']
+  styleUrls: ['./vehicle-list.component.scss'],
+  imports: [CommonModule]
 })
 export class VehicleListComponent implements OnInit {
   vehicles: Vehicle[] = [];
