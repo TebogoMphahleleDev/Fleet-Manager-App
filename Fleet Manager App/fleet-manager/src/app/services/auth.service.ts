@@ -1,5 +1,5 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -15,11 +15,13 @@ export class AuthService {
   constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) {}
 
   login(username: string, password: string): Observable<any> {
-    const formData = new FormData();
-    formData.append('username', username);
-    formData.append('password', password);
+    const params = new HttpParams()
+      .set('username', username)
+      .set('password', password);
 
-    return this.http.post(`${this.apiUrl}/token`, formData).pipe(
+    return this.http.post(`${this.apiUrl}/token`, params, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }).pipe(
       tap((res: any) => {
         if (isPlatformBrowser(this.platformId)) {
           localStorage.setItem('access_token', res.access_token);

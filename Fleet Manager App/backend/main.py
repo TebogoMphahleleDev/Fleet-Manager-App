@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from passlib.context import CryptContext
@@ -36,9 +36,23 @@ class Driver(Base):
     name = Column(String, index=True)
     vehicle_id = Column(Integer, nullable=True)
 
+class Trip(Base):
+    __tablename__ = "trips"
+    id = Column(Integer, primary_key=True, index=True)
+    driver_id = Column(Integer, nullable=False)
+    vehicle_id = Column(Integer, nullable=False)
+    start_location = Column(String, nullable=False)
+    end_location = Column(String, nullable=False)
+    start_time = Column(DateTime, nullable=False)
+    end_time = Column(DateTime, nullable=False)
+
 Base.metadata.create_all(bind=engine)
 
 # Pydantic models
+class UserCreate(BaseModel):
+    username: str
+    password: str
+
 class VehicleCreate(BaseModel):
     name: str
 
@@ -52,6 +66,26 @@ class DriverCreate(BaseModel):
 class DriverUpdate(BaseModel):
     name: str
     vehicle_id: Optional[int] = None
+
+class TripCreate(BaseModel):
+    driver_id: int
+    vehicle_id: int
+    start_location: str
+    end_location: str
+    start_time: datetime
+    end_time: datetime
+
+class Trip(BaseModel):
+    id: int
+    driver_id: int
+    vehicle_id: int
+    start_location: str
+    end_location: str
+    start_time: datetime
+    end_time: datetime
+
+    class Config:
+        from_attributes = True
 
 # Security
 SECRET_KEY = "your_secret_key_here_change_this"
@@ -103,6 +137,20 @@ def get_db():
     finally:
         db.close()
 
+# User registration endpoint
+@app.post("/register")
+def register(user: UserCreate, db: Session = Depends(get_db)):
+    db_user = get_user(db, user.username)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    hashed_password = get_password_hash(user.password)
+    new_user = User(username=user.username, hashed_password=hashed_password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return {"message": "User created successfully"}
+
+# Login endpoint
 @app.post("/token")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)
@@ -186,3 +234,32 @@ def delete_driver(driver_id: int, db: Session = Depends(get_db)):
     db.delete(db_driver)
     db.commit()
     return {"detail": "Driver deleted"}
+
+@app.get("/trips")
+def get_trips(db: Session = Depends(get_db)):
+    trips = db.query(Trip).all()
+    return trips
+
+@app.post("/trips")
+def create_trip(trip: TripCreate, db: Session = Depends(get_db)):
+    # Check for double-booking
+    existing_trip = db.query(Trip).filter(
+        ((Trip.driver_id == trip.driver_id) | (Trip.vehicle_id == trip.vehicle_id)),
+        Trip.start_time < trip.end_time,
+        Trip.end_time > trip.start_time
+    ).first()
+    if existing_trip:
+        raise HTTPException(status_code=400, detail="Driver or vehicle is already booked for this time period")
+
+    db_trip = Trip(
+        driver_id=trip.driver_id,
+        vehicle_id=trip.vehicle_id,
+        start_location=trip.start_location,
+        end_location=trip.end_location,
+        start_time=trip.start_time,
+        end_time=trip.end_time
+    )
+    db.add(db_trip)
+    db.commit()
+    db.refresh(db_trip)
+    return db_trip

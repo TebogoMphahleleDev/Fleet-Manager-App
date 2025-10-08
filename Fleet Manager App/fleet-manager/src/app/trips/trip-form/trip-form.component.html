@@ -1,0 +1,55 @@
+<div class="trip-form">
+  <h2>{{ tripId ? 'Edit Trip' : 'Add Trip' }}</h2>
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+  <form [formGroup]="tripForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="driver_id">Driver:</label>
+      <select id="driver_id" formControlName="driver_id">
+        <option value="">Select Driver</option>
+        <option *ngFor="let driver of drivers" [value]="driver.id">{{ driver.name }}</option>
+      </select>
+      <div *ngIf="tripForm.get('driver_id')?.invalid && tripForm.get('driver_id')?.touched" class="error">
+        Driver is required.
+      </div>
+    </div>
+    <div>
+      <label for="vehicle_id">Vehicle:</label>
+      <select id="vehicle_id" formControlName="vehicle_id">
+        <option value="">Select Vehicle</option>
+        <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">{{ vehicle.name }}</option>
+      </select>
+      <div *ngIf="tripForm.get('vehicle_id')?.invalid && tripForm.get('vehicle_id')?.touched" class="error">
+        Vehicle is required.
+      </div>
+    </div>
+    <div>
+      <label for="start_location">Start Location:</label>
+      <input id="start_location" formControlName="start_location" />
+      <div *ngIf="tripForm.get('start_location')?.invalid && tripForm.get('start_location')?.touched" class="error">
+        Start location is required.
+      </div>
+    </div>
+    <div>
+      <label for="end_location">End Location:</label>
+      <input id="end_location" formControlName="end_location" />
+      <div *ngIf="tripForm.get('end_location')?.invalid && tripForm.get('end_location')?.touched" class="error">
+        End location is required.
+      </div>
+    </div>
+    <div>
+      <label for="start_time">Start Time:</label>
+      <input id="start_time" type="datetime-local" formControlName="start_time" />
+      <div *ngIf="tripForm.get('start_time')?.invalid && tripForm.get('start_time')?.touched" class="error">
+        Start time is required.
+      </div>
+    </div>
+    <div>
+      <label for="end_time">End Time:</label>
+      <input id="end_time" type="datetime-local" formControlName="end_time" />
+      <div *ngIf="tripForm.get('end_time')?.invalid && tripForm.get('end_time')?.touched" class="error">
+        End time is required.
+      </div>
+    </div>
+    <button type="submit" [disabled]="tripForm.invalid">{{ tripId ? 'Update' : 'Add' }}</button>
+  </form>
+</div>
