@@ -1,250 +1,126 @@
-🚀 AI-Powered Learning Project: Fleet Manager App
-Note: This is a personal learning project where I'm using AI assistance to accelerate my development process while ensuring I understand and implement all concepts.
+# 🚗 Fleet Manager App
 
-🎯 Learning Objectives
-Master Angular framework and best practices
+A full-stack web application designed to manage vehicles, drivers, trips, and maintenance schedules for fleet operations. This project demonstrates strong skills in Angular for the frontend and FastAPI with SQLite for the backend.
 
-Deepen Python FastAPI backend development skills
+## 🎯 Project Objectives
+- Master Angular framework and best practices.
+- Deepen understanding of FastAPI backend development.
+- Learn full-stack architecture and RESTful API design.
+- Build efficient and scalable SQLite databases.
+- Implement JWT authentication and user authorization.
+- Apply real-world business logic in fleet management scenarios.
+- Practice end-to-end problem-solving and optimization skills.
 
-Understand full-stack application architecture
+## 🧩 Features by Phase
 
-Learn PostgreSQL database design and optimization
+| Phase | Feature | Status | Description |
+|-------|---------|--------|-------------|
+| Phase 1 | Project Setup | ✅ Completed | Initialized Angular & FastAPI projects with SQLite integration. |
+| Phase 2 | Authentication | ✅ Completed | Implemented secure JWT authentication with route protection. |
+| Phase 3 | Vehicle Management | ✅ Completed | Added CRUD operations, vehicle forms, and RESTful API integration. |
+| Phase 4 | Driver Management | ✅ Completed | Developed driver CRUD, validation, and vehicle assignment. |
+| Phase 5 | Trip Management | ✅ Completed | Implemented trip scheduling with double-booking prevention for drivers and vehicles. |
+| Phase 6 | Maintenance Tracking | ⏳ Planned | Will manage service schedules and maintenance logs. |
+| Phase 7 | Dashboard | ⏳ Planned | Will visualize key data with charts and summaries. |
+| Phase 8 | Deployment | ⏳ Planned | Will focus on hosting, CI/CD, and performance optimization. |
 
-Practice JWT authentication and security
+## 📊 Current Progress
+- Completed: 5 / 8 Phases (62.5%)
+- In Progress: 0 / 8 Phases (0%)
+- Pending: 3 / 8 Phases (37.5%)
 
-Implement real-world business logic
+## 🛠 Tech Stack
 
-Develop problem-solving skills with AI collaboration
+### Frontend (Angular)
+- Angular Components & Services
+- RxJS Observables
+- Reactive Forms
+- Routing & Guards
 
-🤖 My Development Approach
-I'm using AI to:
+### Backend (Python FastAPI)
+- FastAPI for RESTful APIs
+- SQLAlchemy ORM
+- Pydantic Schemas
+- JWT Authentication
+- Dependency Injection
 
-Accelerate boilerplate code generation
+### Database
+- SQLite
+- Relational Models & Joins
+- Query Optimization
 
-Get instant feedback on best practices
+## 📁 Project Structure
 
-Debug and optimize code efficiently
-
-Learn industry standards faster
-
-Focus on understanding concepts rather than syntax
-
-Important: All code is reviewed, understood, and customized by me to ensure genuine learning.
-
-📊 Project Progress Kanban
-🎯 Phase Status
-Phase	Feature	Status	My Role	AI Assistance
-Phase 1	Project Setup	✅ Completed	Code review & customization	Initial scaffolding
-Phase 2	Authentication	✅ Completed	Implementation & testing	JWT flow guidance
-Phase 3	Vehicle Management	✅ Completed	Business logic & UI	API structure suggestions
-Phase 4	Driver Management	🔄 In Progress	Active development	Code optimization tips
-Phase 5	Trip Management	⏳ Pending	Planned implementation	Architecture planning
-Phase 6	Maintenance Tracking	⏳ Pending	Future development	Database design help
-Phase 7	Dashboard	⏳ Pending	UI/UX focus	Chart implementation
-Phase 8	Deployment	⏳ Pending	DevOps learning	Deployment guidance
-📈 Progress Summary
-Completed: 3/8 Phases (37.5%)
-
-In Progress: 1/8 Phases (12.5%)
-
-Pending: 4/8 Phases (50%)
-
-My Code Contribution: ~70%
-
-AI Assistance: ~30%
-
-🛠 Tech Stack I'm Mastering
-Frontend (Angular) - Learning Focus
-✅ Angular Components & Services
-
-✅ RxJS Observables
-
-✅ Angular Material UI
-
-🔄 Reactive Forms
-
-⏳ Route Guards
-
-⏳ State Management
-
-Backend (Python FastAPI) - Learning Focus
-✅ FastAPI Basics
-
-✅ SQLAlchemy ORM
-
-✅ JWT Authentication
-
-🔄 Pydantic Schemas
-
-⏳ Database Relationships
-
-⏳ API Best Practices
-
-Database (PostgreSQL)
-✅ Basic Models
-
-🔄 Relationships
-
-⏳ Query Optimization
-
-⏳ Migrations
-
-🎓 Skills I'm Testing
-Currently Demonstrated ✅
-Angular component architecture
-
-JWT authentication flow
-
-RESTful API design
-
-CRUD operations
-
-Basic SQLAlchemy usage
-
-Frontend-backend integration
-
-In Progress 🔄
-Complex form validation
-
-Database relationships
-
-Error handling
-
-Code optimization
-
-Upcoming ⏳
-Advanced Angular patterns
-
-API security best practices
-
-Performance optimization
-
-Deployment strategies
-
-📁 My Customized Project Structure
-text
+```
 fleet-manager/
-├── frontend/                 # My Angular implementation
-│   ├── src/app/
-│   │   ├── components/      # My custom components
-│   │   │   ├── auth/       # ✅ Hand-coded login/logout
-│   │   │   ├── vehicles/   # ✅ Custom vehicle forms
-│   │   │   ├── drivers/    # 🔄 In progress
-│   │   │   ├── trips/      # ⏳ Planning phase
-│   │   │   ├── maintenance/# ⏳ Future
-│   │   │   └── dashboard/  # ⏳ Future
-│   │   ├── services/       # My service implementations
-│   │   ├── guards/         # My route protection
-│   │   ├── models/         # My TypeScript interfaces
-│   │   └── app-routing.module.ts # My routing setup
-│   └── package.json
-├── backend/                 # My FastAPI implementation
-│   ├── app/
-│   │   ├── models/         # My SQLAlchemy models
-│   │   ├── schemas/        # My Pydantic schemas  
-│   │   ├── routes/         # My API endpoints
-│   │   ├── services/       # My business logic
-│   │   └── auth/           # My JWT implementation
-│   ├── requirements.txt
-│   └── main.py
-└── README.md
-🚀 My Development Workflow
-Planning Phase
+├── src/app/
+│   ├── components/
+│   │   ├── auth/         # Login/Logout
+│   │   ├── vehicles/     # Vehicle CRUD
+│   │   ├── drivers/      # Driver CRUD & Assignments
+│   │   ├── trips/        # Trip Management
+│   │   ├── maintenance/  # Maintenance Tracking
+│   │   └── dashboard/    # Stats & Reports
+│   ├── services/         # API integration
+│   ├── guards/           # Route protection
+│   └── app-routing.module.ts
+└── package.json
 
-Define requirements
+backend/
+├── models/               # SQLAlchemy models
+├── schemas/              # Pydantic schemas
+├── routes/               # API routes
+├── services/             # Business logic
+├── auth/                 # JWT authentication
+├── requirements.txt
+└── main.py
+```
 
-Discuss architecture with AI
+## ⚙️ Setup Instructions
 
-Create implementation plan
-
-Development Phase
-
-Write initial code myself
-
-Use AI for optimization suggestions
-
-Implement improvements
-
-Test functionality
-
-Review Phase
-
-Code review with AI
-
-Refactor based on feedback
-
-Document learnings
-
-🎯 Current Focus: Driver Management
-What I'm Building Now
-Driver CRUD operations
-
-Driver-vehicle assignment logic
-
-License validation
-
-Availability tracking
-
-Skills I'm Practicing
-Complex form handling
-
-Database relationships
-
-UI/UX design
-
-Error handling
-
-📚 Learning Outcomes So Far
-✅ Achieved Learnings
-Angular service dependency injection
-
-JWT token management
-
-FastAPI dependency injection
-
-SQLAlchemy model relationships
-
-CORS configuration
-
-Environment variables management
-
-🔄 Current Learning
-Advanced form validation
-
-Database transaction handling
-
-API response optimization
-
-Frontend state management
-
-🔧 Quick Start (My Development Environment)
-bash
-# Frontend (My Angular setup)
-cd frontend
+### Frontend
+```bash
+cd fleet-manager
 npm install
 ng serve
+```
 
-# Backend (My FastAPI setup)  
+### Backend
+```bash
 cd backend
 python -m venv venv
-source venv/bin/activate
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn main:app --reload
-💡 My Development Philosophy
-"Use AI as a coding partner, not a crutch. Understand every line of code, but don't waste time on boilerplate."
+```
 
-🎉 Next Milestones
-Complete Driver Management (This week)
+## 🧠 Key Concepts Covered
+- Angular service injection and state management.
+- JWT token handling and secure API communication.
+- FastAPI routing, dependency injection, and ORM integration.
+- Database schema design and relationships with SQLAlchemy.
+- Full CRUD lifecycle from frontend to database.
+- Cross-Origin Resource Sharing (CORS) setup.
+- Environment variable and configuration management.
 
-Start Trip Management (Next week)
+## 🎯 Current Development Focus
+- Completed Trip Management Module
+- Next: Maintenance Tracking Module
 
-Implement Complex Business Logic (Following week)
+## 🪄 Upcoming Features
+- Maintenance schedule automation.
+- Dashboard with analytics and visualizations.
+- Application deployment (frontend + backend).
 
-Add Advanced Features (Ongoing)
+## 💡 Development Philosophy
+"Write every line with understanding. Build projects that teach, not just work."
 
-🚀 Learning in public • Building with AI • Mastering full-stack development
+## 📅 Project Timeline
+- This Week: Begin Maintenance Tracking.
+- Next Week: Complete Maintenance Tracking and start Dashboard.
+- Following Weeks: Add deployment modules.
+- Final Stage: Performance optimization and testing.
 
-Last Updated: 10/06/2025
-
-*Progress: 3/8 phases completed • 70% hands-on coding • 100% understanding*
-
+**Status:** Active Development  
+**Last Updated:** October 7, 2025  
+**Progress:** 5 / 8 Phases Completed (62.5%)
