@@ -5,6 +5,7 @@
   <ul>
     <li *ngFor="let vehicle of vehicles">
       {{ vehicle.name }}
+      <button routerLink="/vehicles/form/{{ vehicle.id }}">Edit</button>
       <button (click)="deleteVehicle(vehicle.id)">Delete</button>
     </li>
   </ul>

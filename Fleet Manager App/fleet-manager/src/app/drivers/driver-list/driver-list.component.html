@@ -5,6 +5,7 @@
   <ul>
     <li *ngFor="let driver of drivers">
       {{ driver.name }} - Vehicle ID: {{ driver.vehicle_id || 'None' }}
+      <button routerLink="/drivers/form/{{ driver.id }}">Edit</button>
       <button (click)="deleteDriver(driver.id)">Delete</button>
     </li>
   </ul>

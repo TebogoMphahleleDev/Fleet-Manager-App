@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+ import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -14,7 +14,9 @@ export const routes: Routes = [
   { path: 'trips/form', loadComponent: () => import('./trips/trip-form/trip-form.component').then(m => m.TripFormComponent), canActivate: [AuthGuard] },
   { path: 'trips/form/:id', loadComponent: () => import('./trips/trip-form/trip-form.component').then(m => m.TripFormComponent), canActivate: [AuthGuard] },
   { path: 'trips/:id', loadComponent: () => import('./trips/trip-detail/trip-detail.component').then(m => m.TripDetailComponent), canActivate: [AuthGuard] },
+  { path: 'maintenance', loadComponent: () => import('./maintenance/maintenance-list/maintenance-list.component').then(m => m.MaintenanceListComponent), canActivate: [AuthGuard] },
+  { path: 'maintenance/form', loadComponent: () => import('./maintenance/maintenance-form/maintenance-form.component').then(m => m.MaintenanceFormComponent), canActivate: [AuthGuard] },
+  { path: 'maintenance/form/:id', loadComponent: () => import('./maintenance/maintenance-form/maintenance-form.component').then(m => m.MaintenanceFormComponent), canActivate: [AuthGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/dashboard' }
-
 ];
