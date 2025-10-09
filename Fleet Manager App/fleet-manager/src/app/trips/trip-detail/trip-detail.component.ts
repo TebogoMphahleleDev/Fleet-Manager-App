@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TripService, Trip } from '../../services/trip.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-trip-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './trip-detail.component.html',
   styleUrls: ['./trip-detail.component.scss']
 })
@@ -21,11 +21,11 @@ export class TripDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = +this.route.snapshot.params['id'];
+    const id = this.route.snapshot.params['id'];
     this.loadTrip(id);
   }
 
-  loadTrip(id: number): void {
+  loadTrip(id: string): void {
     this.tripService.getTrips().subscribe({
       next: (trips) => {
         this.trip = trips.find(t => t.id === id) || null;

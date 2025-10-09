@@ -1,5 +1,6 @@
 <div class="driver-list">
   <h2>Drivers</h2>
+  <button routerLink="/drivers/form">Add New Driver</button>
   <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
   <ul>
     <li *ngFor="let driver of drivers">

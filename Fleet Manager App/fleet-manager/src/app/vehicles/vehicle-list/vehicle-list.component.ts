@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { VehicleService, Vehicle } from '../../services/vehicle.service';
 import {CommonModule} from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-vehicle-list',
   templateUrl: './vehicle-list.component.html',
   styleUrls: ['./vehicle-list.component.scss'],
-  imports: [CommonModule]
+  imports: [CommonModule, RouterLink]
 })
 export class VehicleListComponent implements OnInit {
   vehicles: Vehicle[] = [];
@@ -25,7 +26,7 @@ export class VehicleListComponent implements OnInit {
     });
   }
 
-  deleteVehicle(id: number): void {
+  deleteVehicle(id: string): void {
     this.vehicleService.deleteVehicle(id).subscribe({
       next: () => this.loadVehicles(),
       error: (err) => this.errorMessage = 'Failed to delete vehicle'

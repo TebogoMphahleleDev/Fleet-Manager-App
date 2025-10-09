@@ -15,7 +15,7 @@ import { CommonModule } from '@angular/common';
 })
 export class TripFormComponent implements OnInit {
   tripForm: FormGroup;
-  tripId: number | null = null;
+  tripId: string | null = null;
   errorMessage: string = '';
   drivers: Driver[] = [];
   vehicles: Vehicle[] = [];
@@ -41,7 +41,7 @@ export class TripFormComponent implements OnInit {
   ngOnInit(): void {
     this.loadDrivers();
     this.loadVehicles();
-    this.tripId = this.route.snapshot.params['id'] ? +this.route.snapshot.params['id'] : null;
+    this.tripId = this.route.snapshot.params['id'] || null;
     if (this.tripId) {
       this.loadTrip(this.tripId);
     }
@@ -61,7 +61,7 @@ export class TripFormComponent implements OnInit {
     });
   }
 
-  loadTrip(id: number): void {
+  loadTrip(id: string): void {
     this.tripService.getTrips().subscribe({
       next: (trips) => {
         const trip = trips.find(t => t.id === id);
@@ -76,19 +76,33 @@ export class TripFormComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log('Form valid:', this.tripForm.valid);
     if (this.tripForm.invalid) {
       return;
     }
     const tripData = this.tripForm.value;
+    console.log('Submitting trip data:', tripData);
     if (this.tripId) {
       this.tripService.updateTrip(this.tripId, tripData).subscribe({
-        next: () => this.router.navigate(['/trips']),
-        error: () => this.errorMessage = 'Failed to update trip'
+        next: () => {
+          console.log('Trip updated successfully');
+          this.router.navigate(['/trips']);
+        },
+        error: (err) => {
+          console.error('Error updating trip', err);
+          this.errorMessage = err.message || 'Failed to update trip';
+        }
       });
     } else {
       this.tripService.addTrip(tripData).subscribe({
-        next: () => this.router.navigate(['/trips']),
-        error: (err) => this.errorMessage = err.error.detail || 'Failed to add trip'
+        next: () => {
+          console.log('Trip added successfully');
+          this.router.navigate(['/trips']);
+        },
+        error: (err) => {
+          console.error('Error adding trip', err);
+          this.errorMessage = err.message || 'Failed to add trip';
+        }
       });
     }
   }

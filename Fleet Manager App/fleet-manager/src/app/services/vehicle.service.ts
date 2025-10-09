@@ -1,42 +1,47 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { AuthService } from './auth.service';
+import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { Observable, from } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface Vehicle {
-  id: number;
+  id: string;
   name: string;
-  // add more fields
+  model: string;
+  make: string;
+  color: string;
+  registrationNumber: string;
+  licenseExpiryDate: string;
+  yearOfCar: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class VehicleService {
-  private apiUrl = 'http://localhost:8000/vehicles';
-
-  constructor(private http: HttpClient, private authService: AuthService) {}
-
-  private getHeaders(): HttpHeaders {
-    const token = this.authService.getToken();
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-  }
+  private collectionName = 'vehicles';
+  private firestore = getFirestore();
 
   getVehicles(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(this.apiUrl, { headers: this.getHeaders() });
+    const vehiclesCollection = collection(this.firestore, this.collectionName);
+    return from(getDocs(vehiclesCollection)).pipe(
+      map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Vehicle)))
+    );
   }
 
   addVehicle(vehicle: Omit<Vehicle, 'id'>): Observable<Vehicle> {
-    return this.http.post<Vehicle>(this.apiUrl, vehicle, { headers: this.getHeaders() });
+    const vehiclesCollection = collection(this.firestore, this.collectionName);
+    return from(addDoc(vehiclesCollection, vehicle)).pipe(
+      map(docRef => ({ id: docRef.id, ...vehicle } as Vehicle))
+    );
   }
 
-  updateVehicle(id: number, vehicle: Omit<Vehicle, 'id'>): Observable<Vehicle> {
-    return this.http.put<Vehicle>(`${this.apiUrl}/${id}`, vehicle, { headers: this.getHeaders() });
+  updateVehicle(id: string, vehicle: Omit<Vehicle, 'id'>): Observable<void> {
+    const vehicleDoc = doc(this.firestore, this.collectionName, id);
+    return from(updateDoc(vehicleDoc, vehicle));
   }
 
-  deleteVehicle(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  deleteVehicle(id: string): Observable<void> {
+    const vehicleDoc = doc(this.firestore, this.collectionName, id);
+    return from(deleteDoc(vehicleDoc));
   }
 }

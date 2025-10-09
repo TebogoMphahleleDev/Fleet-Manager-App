@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 })
 export class VehicleFormComponent implements OnInit {
   vehicleForm: FormGroup;
-  vehicleId: number | null = null;
+  vehicleId: string | null = null;
   errorMessage: string = '';
 
   constructor(
@@ -23,18 +23,24 @@ export class VehicleFormComponent implements OnInit {
     private router: Router
   ) {
     this.vehicleForm = this.fb.group({
-      name: ['', Validators.required]
+      name: ['', Validators.required],
+      model: [''],
+      make: [''],
+      color: [''],
+      registrationNumber: [''],
+      licenseExpiryDate: [''],
+      yearOfCar: ['']
     });
   }
 
   ngOnInit(): void {
-    this.vehicleId = this.route.snapshot.params['id'] ? +this.route.snapshot.params['id'] : null;
+    this.vehicleId = this.route.snapshot.params['id'] || null;
     if (this.vehicleId) {
       this.loadVehicle(this.vehicleId);
     }
   }
 
-  loadVehicle(id: number): void {
+  loadVehicle(id: string): void {
     this.vehicleService.getVehicles().subscribe({
       next: (vehicles) => {
         const vehicle = vehicles.find(v => v.id === id);

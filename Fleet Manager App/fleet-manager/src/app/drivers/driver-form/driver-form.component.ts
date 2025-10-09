@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 })
 export class DriverFormComponent implements OnInit {
   driverForm: FormGroup;
-  driverId: number | null = null;
+  driverId: string | null = null;
   vehicles: Vehicle[] = [];
   errorMessage: string = '';
 
@@ -27,12 +27,15 @@ export class DriverFormComponent implements OnInit {
   ) {
     this.driverForm = this.fb.group({
       name: ['', Validators.required],
-      vehicle_id: ['']
+      vehicle_id: [''],
+      numberOfExperience: [0],
+      licenseNumber: [''],
+      contactInfo: ['']
     });
   }
 
   ngOnInit(): void {
-    this.driverId = this.route.snapshot.params['id'] ? +this.route.snapshot.params['id'] : null;
+    this.driverId = this.route.snapshot.params['id'] || null;
     this.loadVehicles();
     if (this.driverId) {
       this.loadDriver(this.driverId);
@@ -46,7 +49,7 @@ export class DriverFormComponent implements OnInit {
     });
   }
 
-  loadDriver(id: number): void {
+  loadDriver(id: string): void {
     this.driverService.getDrivers().subscribe({
       next: (drivers) => {
         const driver = drivers.find(d => d.id === id);

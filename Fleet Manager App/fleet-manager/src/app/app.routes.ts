@@ -14,7 +14,7 @@ export const routes: Routes = [
   { path: 'trips/form', loadComponent: () => import('./trips/trip-form/trip-form.component').then(m => m.TripFormComponent), canActivate: [AuthGuard] },
   { path: 'trips/form/:id', loadComponent: () => import('./trips/trip-form/trip-form.component').then(m => m.TripFormComponent), canActivate: [AuthGuard] },
   { path: 'trips/:id', loadComponent: () => import('./trips/trip-detail/trip-detail.component').then(m => m.TripDetailComponent), canActivate: [AuthGuard] },
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/dashboard' }
 
 ];
