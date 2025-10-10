@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { DriverService, Driver } from '../../services/driver.service';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-driver-list',
   templateUrl: './driver-list.component.html',
   styleUrls: ['./driver-list.component.scss'],
-   imports: [CommonModule],
+   imports: [CommonModule, RouterLink],
 })
 export class DriverListComponent implements OnInit {
   drivers: Driver[] = [];
@@ -25,7 +26,7 @@ export class DriverListComponent implements OnInit {
     });
   }
 
-  deleteDriver(id: number): void {
+  deleteDriver(id: string): void {
     this.driverService.deleteDriver(id).subscribe({
       next: () => this.loadDrivers(),
       error: (err) => this.errorMessage = 'Failed to delete driver'

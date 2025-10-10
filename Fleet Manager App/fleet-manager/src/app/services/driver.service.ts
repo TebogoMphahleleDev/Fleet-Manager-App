@@ -1,42 +1,45 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { AuthService } from './auth.service';
+import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { Observable, from } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface Driver {
-  id: number;
+  id: string;
   name: string;
-  vehicle_id?: number;
+  vehicle_id?: string;
+  numberOfExperience?: number;
+  licenseNumber?: string;
+  contactInfo?: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class DriverService {
-  private apiUrl = 'http://localhost:8000/drivers';
-
-  constructor(private http: HttpClient, private authService: AuthService) {}
-
-  private getHeaders(): HttpHeaders {
-    const token = this.authService.getToken();
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-  }
+  private collectionName = 'drivers';
+  private firestore = getFirestore();
 
   getDrivers(): Observable<Driver[]> {
-    return this.http.get<Driver[]>(this.apiUrl, { headers: this.getHeaders() });
+    const driversCollection = collection(this.firestore, this.collectionName);
+    return from(getDocs(driversCollection)).pipe(
+      map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Driver)))
+    );
   }
 
   addDriver(driver: Omit<Driver, 'id'>): Observable<Driver> {
-    return this.http.post<Driver>(this.apiUrl, driver, { headers: this.getHeaders() });
+    const driversCollection = collection(this.firestore, this.collectionName);
+    return from(addDoc(driversCollection, driver)).pipe(
+      map(docRef => ({ id: docRef.id, ...driver } as Driver))
+    );
   }
 
-  updateDriver(id: number, driver: Omit<Driver, 'id'>): Observable<Driver> {
-    return this.http.put<Driver>(`${this.apiUrl}/${id}`, driver, { headers: this.getHeaders() });
+  updateDriver(id: string, driver: Omit<Driver, 'id'>): Observable<void> {
+    const driverDoc = doc(this.firestore, this.collectionName, id);
+    return from(updateDoc(driverDoc, driver));
   }
 
-  deleteDriver(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  deleteDriver(id: string): Observable<void> {
+    const driverDoc = doc(this.firestore, this.collectionName, id);
+    return from(deleteDoc(driverDoc));
   }
 }

@@ -26,7 +26,7 @@ export class TripListComponent implements OnInit {
     });
   }
 
-  deleteTrip(id: number): void {
+  deleteTrip(id: string): void {
     this.tripService.deleteTrip(id).subscribe({
       next: () => this.loadTrips(),
       error: (err) => this.errorMessage = 'Failed to delete trip'

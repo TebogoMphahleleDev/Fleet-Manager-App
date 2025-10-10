@@ -1,0 +1,38 @@
+<div class="maintenance-form">
+  <h2>{{ maintenanceId ? 'Edit Maintenance' : 'Add Maintenance' }}</h2>
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+  <form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="vehicle_id">Vehicle:</label>
+      <select id="vehicle_id" formControlName="vehicle_id">
+        <option value="">Select Vehicle</option>
+        <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">{{ vehicle.name }}</option>
+      </select>
+      <div *ngIf="maintenanceForm.get('vehicle_id')?.invalid && maintenanceForm.get('vehicle_id')?.touched" class="error">
+        Vehicle is required.
+      </div>
+    </div>
+    <div>
+      <label for="description">Description:</label>
+      <textarea id="description" formControlName="description"></textarea>
+      <div *ngIf="maintenanceForm.get('description')?.invalid && maintenanceForm.get('description')?.touched" class="error">
+        Description is required.
+      </div>
+    </div>
+    <div>
+      <label for="date">Date:</label>
+      <input id="date" type="date" formControlName="date" />
+      <div *ngIf="maintenanceForm.get('date')?.invalid && maintenanceForm.get('date')?.touched" class="error">
+        Date is required.
+      </div>
+    </div>
+    <div>
+      <label for="cost">Cost:</label>
+      <input id="cost" type="number" formControlName="cost" />
+      <div *ngIf="maintenanceForm.get('cost')?.invalid && maintenanceForm.get('cost')?.touched" class="error">
+        Cost is required and must be positive.
+      </div>
+    </div>
+    <button type="submit" [disabled]="maintenanceForm.invalid">{{ maintenanceId ? 'Update' : 'Add' }}</button>
+  </form>
+</div>

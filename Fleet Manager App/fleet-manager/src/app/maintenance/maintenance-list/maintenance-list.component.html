@@ -1,0 +1,26 @@
+<div class="maintenance-list">
+  <h2>Maintenance Records</h2>
+  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+  <a routerLink="/maintenance/form" class="add-button">Add Maintenance</a>
+  <table *ngIf="maintenances.length > 0">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Date</th>
+        <th>Cost</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let maintenance of maintenances">
+        <td>{{ maintenance.description }}</td>
+        <td>{{ maintenance.date }}</td>
+        <td>{{ maintenance.cost }}</td>
+        <td>
+          <button (click)="deleteMaintenance(maintenance.id)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="maintenances.length === 0">No maintenance records found.</p>
+</div>

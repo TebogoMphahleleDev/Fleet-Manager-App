@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { AuthService } from './auth.service';
+import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { Observable, from } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface Trip {
-  id: number;
-  driver_id: number;
-  vehicle_id: number;
+  id: string;
+  driver_id: string;
+  vehicle_id: string;
   start_location: string;
   end_location: string;
   start_time: string;
@@ -17,30 +17,30 @@ export interface Trip {
   providedIn: 'root'
 })
 export class TripService {
-  private apiUrl = 'http://localhost:8000/trips';
-
-  constructor(private http: HttpClient, private authService: AuthService) {}
-
-  private getHeaders(): HttpHeaders {
-    const token = this.authService.getToken();
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-  }
+  private collectionName = 'trips';
+  private firestore = getFirestore();
 
   getTrips(): Observable<Trip[]> {
-    return this.http.get<Trip[]>(this.apiUrl, { headers: this.getHeaders() });
+    const tripsCollection = collection(this.firestore, this.collectionName);
+    return from(getDocs(tripsCollection)).pipe(
+      map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Trip)))
+    );
   }
 
   addTrip(trip: Omit<Trip, 'id'>): Observable<Trip> {
-    return this.http.post<Trip>(this.apiUrl, trip, { headers: this.getHeaders() });
+    const tripsCollection = collection(this.firestore, this.collectionName);
+    return from(addDoc(tripsCollection, trip)).pipe(
+      map(docRef => ({ id: docRef.id, ...trip } as Trip))
+    );
   }
 
-  updateTrip(id: number, trip: Omit<Trip, 'id'>): Observable<Trip> {
-    return this.http.put<Trip>(`${this.apiUrl}/${id}`, trip, { headers: this.getHeaders() });
+  updateTrip(id: string, trip: Omit<Trip, 'id'>): Observable<void> {
+    const tripDoc = doc(this.firestore, this.collectionName, id);
+    return from(updateDoc(tripDoc, trip));
   }
 
-  deleteTrip(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  deleteTrip(id: string): Observable<void> {
+    const tripDoc = doc(this.firestore, this.collectionName, id);
+    return from(deleteDoc(tripDoc));
   }
 }

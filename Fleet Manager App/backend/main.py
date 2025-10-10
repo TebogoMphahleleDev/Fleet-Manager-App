@@ -24,17 +24,27 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
 
+from sqlalchemy import Date
+
 class Vehicle(Base):
     __tablename__ = "vehicles"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    # more fields to be added
+    model = Column(String, nullable=True)
+    make = Column(String, nullable=True)
+    color = Column(String, nullable=True)
+    registration_number = Column(String, nullable=True)
+    license_expiry_date = Column(Date, nullable=True)
+    year_of_car = Column(Integer, nullable=True)
 
 class Driver(Base):
     __tablename__ = "drivers"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     vehicle_id = Column(Integer, nullable=True)
+    number_of_experience = Column(Integer, nullable=True)
+    license_number = Column(String, nullable=True)
+    contact_info = Column(String, nullable=True)
 
 class Trip(Base):
     __tablename__ = "trips"
@@ -53,19 +63,40 @@ class UserCreate(BaseModel):
     username: str
     password: str
 
+from typing import Optional
+from datetime import date
+
 class VehicleCreate(BaseModel):
     name: str
+    model: Optional[str] = None
+    make: Optional[str] = None
+    color: Optional[str] = None
+    registration_number: Optional[str] = None
+    license_expiry_date: Optional[date] = None
+    year_of_car: Optional[int] = None
 
 class VehicleUpdate(BaseModel):
     name: str
+    model: Optional[str] = None
+    make: Optional[str] = None
+    color: Optional[str] = None
+    registration_number: Optional[str] = None
+    license_expiry_date: Optional[date] = None
+    year_of_car: Optional[int] = None
 
 class DriverCreate(BaseModel):
     name: str
     vehicle_id: Optional[int] = None
+    number_of_experience: Optional[int] = None
+    license_number: Optional[str] = None
+    contact_info: Optional[str] = None
 
 class DriverUpdate(BaseModel):
     name: str
     vehicle_id: Optional[int] = None
+    number_of_experience: Optional[int] = None
+    license_number: Optional[str] = None
+    contact_info: Optional[str] = None
 
 class TripCreate(BaseModel):
     driver_id: int
@@ -75,7 +106,9 @@ class TripCreate(BaseModel):
     start_time: datetime
     end_time: datetime
 
-class Trip(BaseModel):
+from typing import List
+
+class TripSchema(BaseModel):
     id: int
     driver_id: int
     vehicle_id: int
@@ -86,6 +119,7 @@ class Trip(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 # Security
 SECRET_KEY = "your_secret_key_here_change_this"
@@ -235,7 +269,7 @@ def delete_driver(driver_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"detail": "Driver deleted"}
 
-@app.get("/trips")
+@app.get("/trips", response_model=List[TripSchema])
 def get_trips(db: Session = Depends(get_db)):
     trips = db.query(Trip).all()
     return trips
