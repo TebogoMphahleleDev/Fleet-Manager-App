@@ -5,14 +5,14 @@ import { App } from './app/app';
 
 import { initializeApp } from "firebase/app";
 
-
+// remove the keys due to security reasons
 const firebaseConfig = {
-  apiKey: "AIzaSyAO9OWydv6YWqpcQwgy6bbk3HYwCjoLUfU",
-  authDomain: "test-database-7a0e4.firebaseapp.com",
-  projectId: "test-database-7a0e4",
-  storageBucket: "test-database-7a0e4.firebasestorage.app",
-  messagingSenderId: "570547338255",
-  appId: "1:570547338255:web:fc0dbe6ffb916aa949377a"
+  apiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  authDomain: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  projectId: "xxxxxxxxxxxxxxxxxxxxxxxxxx",
+  storageBucket: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  messagingSenderId: "xxxxxxxxxxxxxxx",
+  appId: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 };
 
 // Initialize Firebase
