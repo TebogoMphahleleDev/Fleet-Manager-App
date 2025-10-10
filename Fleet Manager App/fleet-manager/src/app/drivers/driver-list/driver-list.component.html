@@ -1,12 +1,43 @@
 <div class="driver-list">
-  <h2>Drivers</h2>
-  <button routerLink="/drivers/form">Add New Driver</button>
-  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
-  <ul>
-    <li *ngFor="let driver of drivers">
-      {{ driver.name }} - Vehicle ID: {{ driver.vehicle_id || 'None' }}
-      <button routerLink="/drivers/form/{{ driver.id }}">Edit</button>
-      <button (click)="deleteDriver(driver.id)">Delete</button>
-    </li>
-  </ul>
+  <div class="list-header">
+    <h2>Drivers</h2>
+    <button routerLink="/drivers/form" class="add-btn">
+      <span class="btn-icon">➕</span>
+      Add New Driver
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    <span class="error-icon">⚠️</span>
+    {{ errorMessage }}
+  </div>
+
+  <div class="drivers-container">
+    
+    @for (driver of drivers; track driver.id) {
+  <div class="driver-card">
+    <div class="driver-info">
+      <h3 class="driver-name">{{ driver.name }}</h3>
+      <p class="vehicle-info">
+        <span class="label">Vehicle:</span>
+        {{ driver.vehicle_id || 'Not assigned' }}
+      </p>
+    </div>
+    <div class="driver-actions">
+      <button routerLink="/drivers/form/{{ driver.id }}" class="edit-btn">
+        <span class="btn-icon">✏️</span>
+        Edit
+      </button>
+      <button (click)="deleteDriver(driver.id)" class="delete-btn">
+        <span class="btn-icon">🗑️</span>
+        Delete
+      </button>
+    </div>
+  </div>
+  }
+  </div>
+
+  <div *ngIf="drivers.length === 0" class="empty-state">
+    <p>No drivers found. Add your first driver to get started.</p>
+  </div>
 </div>

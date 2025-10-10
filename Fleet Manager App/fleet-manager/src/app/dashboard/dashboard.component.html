@@ -1,9 +1,37 @@
 <div class="dashboard">
-  <h1>Fleet Manager Dashboard</h1>
-  <div class="links">
-    <a routerLink="/vehicles">Manage Vehicles</a>
-    <a routerLink="/drivers">Manage Drivers</a>
-    <a routerLink="/trips">Manage Trips</a>
-    <a routerLink="/maintenance">Manage Maintenance</a>
+  <div class="dashboard-header">
+    <h1>Fleet Manager Dashboard</h1>
+    <p>Manage your fleet operations</p>
   </div>
+  
+  <div class="links-grid">
+    <a routerLink="/vehicles" class="dashboard-card">
+      <div class="card-icon">🚗</div>
+      <h3>Manage Vehicles</h3>
+      <p>View and manage your vehicle fleet</p>
+    </a>
+    
+    <a routerLink="/drivers" class="dashboard-card">
+      <div class="card-icon">👤</div>
+      <h3>Manage Drivers</h3>
+      <p>Handle driver information and assignments</p>
+    </a>
+    
+    <a routerLink="/trips" class="dashboard-card">
+      <div class="card-icon">📍</div>
+      <h3>Manage Trips</h3>
+      <p>Schedule and track vehicle trips</p>
+    </a>
+    
+    <a routerLink="/maintenance" class="dashboard-card">
+      <div class="card-icon">🔧</div>
+      <h3>Manage Maintenance</h3>
+      <p>Track maintenance and repairs</p>
+    </a>
+  </div>
+  
+  <button (click)="logout()" class="logout-btn">
+    <span class="logout-icon">🚪</span>
+    Logout
+  </button>
 </div>

@@ -1,6 +1,5 @@
 <div class="trip-form">
   <h2>{{ tripId ? 'Edit Trip' : 'Add Trip' }}</h2>
-  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
   <form [formGroup]="tripForm" (ngSubmit)="onSubmit()">
     <div>
       <label for="driver_id">Driver:</label>
