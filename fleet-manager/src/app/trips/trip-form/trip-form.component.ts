@@ -6,6 +6,10 @@ import { VehicleService, Vehicle } from '../../services/vehicle.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+/**
+ * Component for adding or editing a trip.
+ * Provides a form to input trip details and handles submission.
+ */
 @Component({
   selector: 'app-trip-form',
   standalone: true,
@@ -15,11 +19,21 @@ import { CommonModule } from '@angular/common';
 })
 export class TripFormComponent implements OnInit {
   tripForm: FormGroup;
-  tripId: number | null = null;
+  tripId: string | null = null;
   errorMessage: string = '';
   drivers: Driver[] = [];
   vehicles: Vehicle[] = [];
 
+  /**
+   * Constructor for TripFormComponent.
+   * Initializes the form with required validators.
+   * @param fb FormBuilder for creating the form.
+   * @param tripService Service for managing trip data.
+   * @param driverService Service for managing driver data.
+   * @param vehicleService Service for managing vehicle data.
+   * @param route ActivatedRoute for accessing route parameters.
+   * @param router Router for navigation.
+   */
   constructor(
     private fb: FormBuilder,
     private tripService: TripService,
@@ -38,15 +52,21 @@ export class TripFormComponent implements OnInit {
     });
   }
 
+  /**
+   * Initializes the component, loads drivers and vehicles, and checks for edit mode.
+   */
   ngOnInit(): void {
     this.loadDrivers();
     this.loadVehicles();
-    this.tripId = this.route.snapshot.params['id'] ? +this.route.snapshot.params['id'] : null;
+    this.tripId = this.route.snapshot.params['id'] || null;
     if (this.tripId) {
       this.loadTrip(this.tripId);
     }
   }
 
+  /**
+   * Loads the list of drivers from the service.
+   */
   loadDrivers(): void {
     this.driverService.getDrivers().subscribe({
       next: (data) => this.drivers = data,
@@ -54,6 +74,9 @@ export class TripFormComponent implements OnInit {
     });
   }
 
+  /**
+   * Loads the list of vehicles from the service.
+   */
   loadVehicles(): void {
     this.vehicleService.getVehicles().subscribe({
       next: (data) => this.vehicles = data,
@@ -61,7 +84,11 @@ export class TripFormComponent implements OnInit {
     });
   }
 
-  loadTrip(id: number): void {
+  /**
+   * Loads the trip data for editing by ID.
+   * @param id The ID of the trip to load.
+   */
+  loadTrip(id: string): void {
     this.tripService.getTrips().subscribe({
       next: (trips) => {
         const trip = trips.find(t => t.id === id);
@@ -75,20 +102,37 @@ export class TripFormComponent implements OnInit {
     });
   }
 
+  /**
+   * Handles form submission for adding or updating a trip.
+   */
   onSubmit(): void {
+    console.log('Form valid:', this.tripForm.valid);
     if (this.tripForm.invalid) {
       return;
     }
     const tripData = this.tripForm.value;
+    console.log('Submitting trip data:', tripData);
     if (this.tripId) {
       this.tripService.updateTrip(this.tripId, tripData).subscribe({
-        next: () => this.router.navigate(['/trips']),
-        error: () => this.errorMessage = 'Failed to update trip'
+        next: () => {
+          console.log('Trip updated successfully');
+          this.router.navigate(['/trips']);
+        },
+        error: (err) => {
+          console.error('Error updating trip', err);
+          this.errorMessage = err.message || 'Failed to update trip';
+        }
       });
     } else {
       this.tripService.addTrip(tripData).subscribe({
-        next: () => this.router.navigate(['/trips']),
-        error: (err) => this.errorMessage = err.error.detail || 'Failed to add trip'
+        next: () => {
+          console.log('Trip added successfully');
+          this.router.navigate(['/trips']);
+        },
+        error: (err) => {
+          console.error('Error adding trip', err);
+          this.errorMessage = err.message || 'Failed to add trip';
+        }
       });
     }
   }

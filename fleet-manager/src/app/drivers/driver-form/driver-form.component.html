@@ -16,6 +16,18 @@
         <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">{{ vehicle.name }}</option>
       </select>
     </div>
+    <div>
+      <label for="numberOfExperience">Number of Experience:</label>
+      <input id="numberOfExperience" type="number" formControlName="numberOfExperience" />
+    </div>
+    <div>
+      <label for="licenseNumber">License Number:</label>
+      <input id="licenseNumber" formControlName="licenseNumber" />
+    </div>
+    <div>
+      <label for="contactInfo">Contact Info:</label>
+      <input id="contactInfo" formControlName="contactInfo" />
+    </div>
     <button type="submit" [disabled]="driverForm.invalid">{{ driverId ? 'Update' : 'Add' }}</button>
   </form>
 </div>

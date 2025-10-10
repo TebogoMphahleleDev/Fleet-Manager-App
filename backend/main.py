@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 from pydantic import BaseModel
 
+# Database configuration
 DATABASE_URL = "sqlite:///./fleet_manager.db"
 
 engine = create_engine(DATABASE_URL)
@@ -17,26 +18,57 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-# Models
+# SQLAlchemy Models
+
 class User(Base):
+    """
+    SQLAlchemy model for User.
+
+    Represents a user in the database with username and hashed password.
+    """
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
 
+from sqlalchemy import Date
+
 class Vehicle(Base):
+    """
+    SQLAlchemy model for Vehicle.
+
+    Represents a vehicle with details like name, model, make, etc.
+    """
     __tablename__ = "vehicles"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    # Add more fields as needed, e.g., model, year, etc.
+    model = Column(String, nullable=True)
+    make = Column(String, nullable=True)
+    color = Column(String, nullable=True)
+    registration_number = Column(String, nullable=True)
+    license_expiry_date = Column(Date, nullable=True)
+    year_of_car = Column(Integer, nullable=True)
 
 class Driver(Base):
+    """
+    SQLAlchemy model for Driver.
+
+    Represents a driver with personal and vehicle assignment details.
+    """
     __tablename__ = "drivers"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     vehicle_id = Column(Integer, nullable=True)
+    number_of_experience = Column(Integer, nullable=True)
+    license_number = Column(String, nullable=True)
+    contact_info = Column(String, nullable=True)
 
 class Trip(Base):
+    """
+    SQLAlchemy model for Trip.
+
+    Represents a trip with driver, vehicle, locations, and times.
+    """
     __tablename__ = "trips"
     id = Column(Integer, primary_key=True, index=True)
     driver_id = Column(Integer, nullable=False)
@@ -49,25 +81,77 @@ class Trip(Base):
 Base.metadata.create_all(bind=engine)
 
 # Pydantic models
+
 class UserCreate(BaseModel):
+    """
+    Pydantic model for user creation.
+
+    Used for registering new users with username and password.
+    """
     username: str
     password: str
 
+from typing import Optional
+from datetime import date
+
 class VehicleCreate(BaseModel):
+    """
+    Pydantic model for creating a new vehicle.
+
+    Contains optional fields for vehicle details.
+    """
     name: str
+    model: Optional[str] = None
+    make: Optional[str] = None
+    color: Optional[str] = None
+    registration_number: Optional[str] = None
+    license_expiry_date: Optional[date] = None
+    year_of_car: Optional[int] = None
 
 class VehicleUpdate(BaseModel):
+    """
+    Pydantic model for updating an existing vehicle.
+
+    Contains optional fields for vehicle details.
+    """
     name: str
+    model: Optional[str] = None
+    make: Optional[str] = None
+    color: Optional[str] = None
+    registration_number: Optional[str] = None
+    license_expiry_date: Optional[date] = None
+    year_of_car: Optional[int] = None
 
 class DriverCreate(BaseModel):
+    """
+    Pydantic model for creating a new driver.
+
+    Contains optional fields for driver details.
+    """
     name: str
     vehicle_id: Optional[int] = None
+    number_of_experience: Optional[int] = None
+    license_number: Optional[str] = None
+    contact_info: Optional[str] = None
 
 class DriverUpdate(BaseModel):
+    """
+    Pydantic model for updating an existing driver.
+
+    Contains optional fields for driver details.
+    """
     name: str
     vehicle_id: Optional[int] = None
+    number_of_experience: Optional[int] = None
+    license_number: Optional[str] = None
+    contact_info: Optional[str] = None
 
 class TripCreate(BaseModel):
+    """
+    Pydantic model for creating a new trip.
+
+    Contains required fields for trip details.
+    """
     driver_id: int
     vehicle_id: int
     start_location: str
@@ -75,7 +159,14 @@ class TripCreate(BaseModel):
     start_time: datetime
     end_time: datetime
 
-class Trip(BaseModel):
+from typing import List
+
+class TripSchema(BaseModel):
+    """
+    Pydantic model for trip response.
+
+    Used for serializing trip data from the database.
+    """
     id: int
     driver_id: int
     vehicle_id: int
@@ -86,6 +177,7 @@ class Trip(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 # Security
 SECRET_KEY = "your_secret_key_here_change_this"
@@ -107,15 +199,55 @@ app.add_middleware(
 )
 
 def verify_password(plain_password, hashed_password):
+    """
+    Verifies a plain password against a hashed password.
+
+    Args:
+        plain_password (str): The plain text password.
+        hashed_password (str): The hashed password.
+
+    Returns:
+        bool: True if passwords match, False otherwise.
+    """
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
+    """
+    Hashes a plain password using bcrypt.
+
+    Args:
+        password (str): The plain text password.
+
+    Returns:
+        str: The hashed password.
+    """
     return pwd_context.hash(password)
 
 def get_user(db: Session, username: str):
+    """
+    Retrieves a user from the database by username.
+
+    Args:
+        db (Session): The database session.
+        username (str): The username to search for.
+
+    Returns:
+        User or None: The user object if found, None otherwise.
+    """
     return db.query(User).filter(User.username == username).first()
 
 def authenticate_user(db: Session, username: str, password: str):
+    """
+    Authenticates a user by username and password.
+
+    Args:
+        db (Session): The database session.
+        username (str): The username.
+        password (str): The password.
+
+    Returns:
+        User or False: The user object if authenticated, False otherwise.
+    """
     user = get_user(db, username)
     if not user:
         return False
@@ -124,6 +256,16 @@ def authenticate_user(db: Session, username: str, password: str):
     return user
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """
+    Creates a JWT access token.
+
+    Args:
+        data (dict): The data to encode in the token.
+        expires_delta (Optional[timedelta]): The expiration time delta.
+
+    Returns:
+        str: The encoded JWT token.
+    """
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta if expires_delta else timedelta(minutes=15))
     to_encode.update({"exp": expire})
@@ -131,6 +273,12 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 def get_db():
+    """
+    Dependency to get a database session.
+
+    Yields:
+        Session: The database session.
+    """
     db = SessionLocal()
     try:
         yield db
@@ -140,6 +288,19 @@ def get_db():
 # User registration endpoint
 @app.post("/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
+    """
+    Registers a new user.
+
+    Args:
+        user (UserCreate): The user data for registration.
+        db (Session): The database session.
+
+    Returns:
+        dict: A message indicating successful registration.
+
+    Raises:
+        HTTPException: If the username is already registered.
+    """
     db_user = get_user(db, user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
@@ -153,6 +314,19 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 # Login endpoint
 @app.post("/token")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    """
+    Logs in a user and returns an access token.
+
+    Args:
+        form_data (OAuth2PasswordRequestForm): The login form data.
+        db (Session): The database session.
+
+    Returns:
+        dict: The access token and token type.
+
+    Raises:
+        HTTPException: If authentication fails.
+    """
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -168,6 +342,12 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 
 @app.get("/")
 def read_root():
+    """
+    Root endpoint.
+
+    Returns:
+        dict: A welcome message.
+    """
     return {"message": "Welcome to Fleet Manager API"}
 
 @app.get("/vehicles")
@@ -235,7 +415,7 @@ def delete_driver(driver_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"detail": "Driver deleted"}
 
-@app.get("/trips")
+@app.get("/trips", response_model=List[TripSchema])
 def get_trips(db: Session = Depends(get_db)):
     trips = db.query(Trip).all()
     return trips

@@ -6,6 +6,7 @@
     <li *ngFor="let trip of trips">
       Driver ID: {{ trip.driver_id }}, Vehicle ID: {{ trip.vehicle_id }}, From: {{ trip.start_location }} to {{ trip.end_location }}, {{ trip.start_time }} - {{ trip.end_time }}
       <a [routerLink]="['/trips', trip.id]">View</a>
+      <a [routerLink]="['/trips/form', trip.id]">Edit</a>
       <button (click)="deleteTrip(trip.id)">Delete</button>
     </li>
   </ul>

@@ -1,8 +1,8 @@
 <div class="login-container">
 
-    <h2>Login</h2>
+    <h2>{{ isRegisterMode ? 'Register' : 'Login' }}</h2>
 
-    <form (ngSubmit)="login()">
+    <form (ngSubmit)="isRegisterMode ? register() : login()">
 
         <div>
 
@@ -20,10 +20,14 @@
 
         </div>
 
-        <button type="submit">Login</button>
+        <button type="submit">{{ isRegisterMode ? 'Register' : 'Login' }}</button>
 
         <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
 
     </form>
+
+    <button type="button" (click)="toggleMode()" class="toggle-btn">
+        {{ isRegisterMode ? 'Already have an account? Login' : 'Need an account? Register' }}
+    </button>
 
 </div>

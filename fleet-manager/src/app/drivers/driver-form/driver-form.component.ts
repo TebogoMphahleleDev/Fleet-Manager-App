@@ -5,6 +5,10 @@ import { VehicleService, Vehicle } from '../../services/vehicle.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+/**
+ * Component for adding or editing a driver.
+ * Provides a form to input driver details and handles submission.
+ */
 @Component({
   selector: 'app-driver-form',
   standalone: true,
@@ -14,10 +18,19 @@ import { CommonModule } from '@angular/common';
 })
 export class DriverFormComponent implements OnInit {
   driverForm: FormGroup;
-  driverId: number | null = null;
+  driverId: string | null = null;
   vehicles: Vehicle[] = [];
   errorMessage: string = '';
 
+  /**
+   * Constructor for DriverFormComponent.
+   * Initializes the form with required validators.
+   * @param fb FormBuilder for creating the form.
+   * @param driverService Service for managing driver data.
+   * @param vehicleService Service for managing vehicle data.
+   * @param route ActivatedRoute for accessing route parameters.
+   * @param router Router for navigation.
+   */
   constructor(
     private fb: FormBuilder,
     private driverService: DriverService,
@@ -27,18 +40,27 @@ export class DriverFormComponent implements OnInit {
   ) {
     this.driverForm = this.fb.group({
       name: ['', Validators.required],
-      vehicle_id: ['']
+      vehicle_id: [''],
+      numberOfExperience: [0],
+      licenseNumber: [''],
+      contactInfo: ['']
     });
   }
 
+  /**
+   * Initializes the component, loads vehicles, and checks for edit mode.
+   */
   ngOnInit(): void {
-    this.driverId = this.route.snapshot.params['id'] ? +this.route.snapshot.params['id'] : null;
+    this.driverId = this.route.snapshot.params['id'] || null;
     this.loadVehicles();
     if (this.driverId) {
       this.loadDriver(this.driverId);
     }
   }
 
+  /**
+   * Loads the list of vehicles from the service.
+   */
   loadVehicles(): void {
     this.vehicleService.getVehicles().subscribe({
       next: (data) => this.vehicles = data,
@@ -46,7 +68,11 @@ export class DriverFormComponent implements OnInit {
     });
   }
 
-  loadDriver(id: number): void {
+  /**
+   * Loads the driver data for editing by ID.
+   * @param id The ID of the driver to load.
+   */
+  loadDriver(id: string): void {
     this.driverService.getDrivers().subscribe({
       next: (drivers) => {
         const driver = drivers.find(d => d.id === id);
@@ -60,6 +86,9 @@ export class DriverFormComponent implements OnInit {
     });
   }
 
+  /**
+   * Handles form submission for adding or updating a driver.
+   */
   onSubmit(): void {
     if (this.driverForm.invalid) {
       return;

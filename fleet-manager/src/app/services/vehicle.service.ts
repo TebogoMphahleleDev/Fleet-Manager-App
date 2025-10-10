@@ -1,42 +1,85 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { AuthService } from './auth.service';
+import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { Observable, from } from 'rxjs';
+import { map } from 'rxjs/operators';
 
+/**
+ * Interface representing a Vehicle entity.
+ */
 export interface Vehicle {
-  id: number;
+  id: string;
   name: string;
-  // add more fields
+  model: string;
+  make: string;
+  color: string;
+  registrationNumber: string;
+  licenseExpiryDate: string;
+  yearOfCar: number;
 }
 
+/**
+ * Service for managing vehicle data operations with Firestore.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class VehicleService {
-  private apiUrl = 'http://localhost:8000/vehicles';
+  private collectionName = 'vehicles';
+  private firestore = getFirestore();
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
-
-  private getHeaders(): HttpHeaders {
-    const token = this.authService.getToken();
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-  }
-
+  /**
+   * Retrieves all vehicles from the Firestore collection.
+   * @returns An Observable of an array of Vehicle objects.
+   */
   getVehicles(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(this.apiUrl, { headers: this.getHeaders() });
+    const vehiclesCollection = collection(this.firestore, this.collectionName);
+    return from(getDocs(vehiclesCollection)).pipe(
+      map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Vehicle)))
+    );
   }
 
+  /**
+   * Retrieves all vehicles from Firestore using async/await.
+   * @returns A promise that resolves to an array of vehicle objects.
+   */
+  async getVehicles_v2() {
+    let items: any[] = [];
+    const itemsCollection = collection(this.firestore, this.collectionName);
+    const querySnapshot = await getDocs(itemsCollection);
+    items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return items
+  }
+
+  /**
+   * Adds a new vehicle to the Firestore collection.
+   * @param vehicle The vehicle data to add, excluding the id.
+   * @returns An Observable of the added Vehicle object with generated id.
+   */
   addVehicle(vehicle: Omit<Vehicle, 'id'>): Observable<Vehicle> {
-    return this.http.post<Vehicle>(this.apiUrl, vehicle, { headers: this.getHeaders() });
+    const vehiclesCollection = collection(this.firestore, this.collectionName);
+    return from(addDoc(vehiclesCollection, vehicle)).pipe(
+      map(docRef => ({ id: docRef.id, ...vehicle } as Vehicle))
+    );
   }
 
-  updateVehicle(id: number, vehicle: Omit<Vehicle, 'id'>): Observable<Vehicle> {
-    return this.http.put<Vehicle>(`${this.apiUrl}/${id}`, vehicle, { headers: this.getHeaders() });
+  /**
+   * Updates an existing vehicle in the Firestore collection.
+   * @param id The id of the vehicle to update.
+   * @param vehicle The updated vehicle data, excluding the id.
+   * @returns An Observable that completes when the update is done.
+   */
+  updateVehicle(id: string, vehicle: Omit<Vehicle, 'id'>): Observable<void> {
+    const vehicleDoc = doc(this.firestore, this.collectionName, id);
+    return from(updateDoc(vehicleDoc, vehicle));
   }
 
-  deleteVehicle(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  /**
+   * Deletes a vehicle from the Firestore collection.
+   * @param id The id of the vehicle to delete.
+   * @returns An Observable that completes when the deletion is done.
+   */
+  deleteVehicle(id: string): Observable<void> {
+    const vehicleDoc = doc(this.firestore, this.collectionName, id);
+    return from(deleteDoc(vehicleDoc));
   }
 }

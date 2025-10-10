@@ -9,6 +9,30 @@
         Name is required.
       </div>
     </div>
+    <div>
+      <label for="model">Model:</label>
+      <input id="model" formControlName="model" />
+    </div>
+    <div>
+      <label for="make">Make:</label>
+      <input id="make" formControlName="make" />
+    </div>
+    <div>
+      <label for="color">Color:</label>
+      <input id="color" formControlName="color" />
+    </div>
+    <div>
+      <label for="registrationNumber">Registration Number:</label>
+      <input id="registrationNumber" formControlName="registrationNumber" />
+    </div>
+    <div>
+      <label for="licenseExpiryDate">License Expiry Date:</label>
+      <input id="licenseExpiryDate" type="date" formControlName="licenseExpiryDate" />
+    </div>
+    <div>
+      <label for="yearOfCar">Year of Car:</label>
+      <input id="yearOfCar" type="number" formControlName="yearOfCar" />
+    </div>
     <button type="submit" [disabled]="vehicleForm.invalid">{{ vehicleId ? 'Update' : 'Add' }}</button>
   </form>
 </div>
