@@ -1,60 +1,64 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable } from '@angular/core';
+import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, User } from '@angular/fire/auth';
+import { Observable, from, BehaviorSubject } from 'rxjs';
 
+/**
+ * Service for handling authentication operations using Firebase Auth.
+ */
 @Injectable({
   providedIn: 'root'
-
 })
-
 export class AuthService {
+  private userSubject = new BehaviorSubject<User | null>(null);
+  public user$ = this.userSubject.asObservable();
 
-  private apiUrl = 'http://localhost:8000'; // Backend URL
-
-  constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) {}
-
-  login(username: string, password: string): Observable<any> {
-    const params = new HttpParams()
-      .set('username', username)
-      .set('password', password);
-
-    return this.http.post(`${this.apiUrl}/token`, params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }).pipe(
-      tap((res: any) => {
-        if (isPlatformBrowser(this.platformId)) {
-          localStorage.setItem('access_token', res.access_token);
-        }
-      })
-
-    );
-
+  constructor(private auth: Auth) {
+    // Listen to auth state changes
+    onAuthStateChanged(this.auth, (user) => {
+      this.userSubject.next(user);
+    });
   }
 
-  register(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, { username, password });
+  /**
+   * Logs in the user with the provided email and password.
+   * @param email The email of the user.
+   * @param password The password of the user.
+   * @returns An Observable of the login response.
+   */
+  login(email: string, password: string): Observable<any> {
+    return from(signInWithEmailAndPassword(this.auth, email, password));
   }
-  logout() {
 
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('access_token');
-    }
-
+  /**
+   * Registers a new user with the provided email and password.
+   * @param email The email for the new user.
+   * @param password The password for the new user.
+   * @returns An Observable of the registration response.
+   */
+  register(email: string, password: string): Observable<any> {
+    return from(createUserWithEmailAndPassword(this.auth, email, password));
   }
 
+  /**
+   * Logs out the user.
+   */
+  logout(): Observable<void> {
+    return from(signOut(this.auth));
+  }
+
+  /**
+   * Checks if the user is logged in.
+   * @returns True if logged in, false otherwise.
+   */
   isLoggedIn(): boolean {
-    if (isPlatformBrowser(this.platformId)) {
-      return !!localStorage.getItem('access_token');
-    }
-    return false;
-  }
-  getToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem('access_token');
-    }
-    return null;
-
+    return this.userSubject.value !== null;
   }
 
+  /**
+   * Gets the current user.
+   * @returns The current user or null.
+   */
+  getCurrentUser(): User | null {
+    return this.userSubject.value;
+  }
 }

@@ -1,18 +1,92 @@
 .trip-list {
-  padding: 20px;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.trip-list h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 20px;
+}
+
+.trip-list > a {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.trip-list > a:hover {
+  background: #0056b3;
 }
 
 .error {
-  color: red;
+  color: #dc3545;
+  padding: 10px;
+  margin-bottom: 20px;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
 }
 
 ul {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
 }
 
 li {
-  margin: 10px 0;
-  padding: 10px;
-  border: 1px solid #ccc;
+  padding: 15px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+li a {
+  padding: 5px 10px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-left: 10px;
+  background: #e9ecef;
+  color: #495057;
+}
+
+li a:hover {
+  background: #dee2e6;
+}
+
+li a:nth-of-type(2) {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+li a:nth-of-type(2):hover {
+  background: #cbd5e0;
+}
+
+li button {
+  padding: 5px 10px;
+  background: #fed7d7;
+  color: #c53030;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+li button:hover {
+  background: #feb2b2;
 }

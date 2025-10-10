@@ -1,6 +1,5 @@
 <div class="vehicle-form">
   <h2>{{ vehicleId ? 'Edit Vehicle' : 'Add Vehicle' }}</h2>
-  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
   <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()">
     <div>
       <label for="name">Name:</label>
@@ -32,6 +31,11 @@
     <div>
       <label for="yearOfCar">Year of Car:</label>
       <input id="yearOfCar" type="number" formControlName="yearOfCar" />
+      <div *ngIf="vehicleForm.get('yearOfCar')?.invalid && vehicleForm.get('yearOfCar')?.touched" class="error">
+        <span *ngIf="vehicleForm.get('yearOfCar')?.errors?.['required']">Year is required.</span>
+        <span *ngIf="vehicleForm.get('yearOfCar')?.errors?.['min']">Year must be at least 1900.</span>
+        <span *ngIf="vehicleForm.get('yearOfCar')?.errors?.['max']">Year must be at most 2024.</span>
+      </div>
     </div>
     <button type="submit" [disabled]="vehicleForm.invalid">{{ vehicleId ? 'Update' : 'Add' }}</button>
   </form>

@@ -1,0 +1,6 @@
+<div class="popup-container">
+  <div *ngFor="let msg of messages" class="popup-message" [ngClass]="getClass(msg.type)">
+    {{ msg.message }}
+    <button class="close-btn" (click)="removeMessage(msg)">×</button>
+  </div>
+</div>

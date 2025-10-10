@@ -1,12 +1,40 @@
 <div class="vehicle-list">
-  <h2>Vehicles</h2>
-  <button routerLink="/vehicles/form">Add New Vehicle</button>
-  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
-  <ul>
-    <li *ngFor="let vehicle of vehicles">
-      {{ vehicle.name }}
-      <button routerLink="/vehicles/form/{{ vehicle.id }}">Edit</button>
-      <button (click)="deleteVehicle(vehicle.id)">Delete</button>
-    </li>
-  </ul>
+  <div class="list-header">
+    <h2>Vehicles</h2>
+    <button routerLink="/vehicles/form" class="add-btn">
+      <span class="btn-icon">➕</span>
+      Add New Vehicle
+    </button>
+  </div>
+
+  @if (errorMessage) {
+    <div class="error-message">
+      <span class="error-icon">⚠️</span>
+      {{ errorMessage }}
+    </div>
+  }
+
+  <div class="vehicles-container">
+    @for (vehicle of vehicles; track vehicle.id) {
+      <div class="vehicle-card">
+        <div class="vehicle-info">
+          <h3 class="vehicle-name">{{ vehicle.name }}</h3>
+        </div>
+        <div class="vehicle-actions">
+          <button routerLink="/vehicles/form/{{ vehicle.id }}" class="edit-btn">
+            <span class="btn-icon">✏️</span>
+            Edit
+          </button>
+          <button (click)="deleteVehicle(vehicle.id)" class="delete-btn">
+            <span class="btn-icon">🗑️</span>
+            Delete
+          </button>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <p>No vehicles found. Add your first vehicle to get started.</p>
+      </div>
+    }
+  </div>
 </div>

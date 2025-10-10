@@ -1,7 +1,21 @@
 from sqlalchemy.orm import Session
 from main import SessionLocal, User, get_password_hash
 
+
 def add_user(username: str, password: str):
+    """
+    Adds a new user to the database.
+
+    This function checks if the user already exists, hashes the password,
+    creates a new User instance, and commits it to the database.
+
+    Args:
+        username (str): The username for the new user.
+        password (str): The password for the new user.
+
+    Returns:
+        None: Prints success or error messages.
+    """
     db: Session = SessionLocal()
     try:
         # Check if user already exists
@@ -25,5 +39,10 @@ def add_user(username: str, password: str):
     finally:
         db.close()
 
+
 if __name__ == "__main__":
+    """
+    Entry point for the script.
+    Adds a sample user when run directly.
+    """
     add_user("tebogo@gmail.com", "tebogo")

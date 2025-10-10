@@ -1,6 +1,5 @@
 <div class="driver-form">
   <h2>{{ driverId ? 'Edit Driver' : 'Add Driver' }}</h2>
-  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
   <form [formGroup]="driverForm" (ngSubmit)="onSubmit()">
     <div>
       <label for="name">Name:</label>
@@ -19,6 +18,10 @@
     <div>
       <label for="numberOfExperience">Number of Experience:</label>
       <input id="numberOfExperience" type="number" formControlName="numberOfExperience" />
+      <div *ngIf="driverForm.get('numberOfExperience')?.invalid && driverForm.get('numberOfExperience')?.touched" class="error">
+        <span *ngIf="driverForm.get('numberOfExperience')?.errors?.['min']">Experience must be at least 0.</span>
+        <span *ngIf="driverForm.get('numberOfExperience')?.errors?.['pattern']">Experience must be a positive integer.</span>
+      </div>
     </div>
     <div>
       <label for="licenseNumber">License Number:</label>

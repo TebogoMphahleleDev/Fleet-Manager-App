@@ -1,6 +1,5 @@
 <div class="maintenance-form">
   <h2>{{ maintenanceId ? 'Edit Maintenance' : 'Add Maintenance' }}</h2>
-  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
   <form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()">
     <div>
       <label for="vehicle_id">Vehicle:</label>
