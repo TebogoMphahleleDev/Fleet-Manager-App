@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef,Component, OnInit } from '@angular/core';
 import { MaintenanceService, Maintenance } from '../../services/maintenance.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -22,7 +22,7 @@ export class MaintenanceListComponent implements OnInit {
    * Constructor for MaintenanceListComponent.
    * @param maintenanceService Service for managing maintenance data.
    */
-  constructor(private maintenanceService: MaintenanceService) {}
+  constructor(private maintenanceService: MaintenanceService, private cd: ChangeDetectorRef) {}
 
   /**
    * Initializes the component by loading the list of maintenances.
@@ -36,8 +36,12 @@ export class MaintenanceListComponent implements OnInit {
    */
   loadMaintenances(): void {
     this.maintenanceService.getMaintenances().subscribe({
-      next: (data) => this.maintenances = data,
-      error: (err) => this.errorMessage = 'Failed to load maintenances'
+      next: (data) => {
+        console.log(data);
+        this.maintenances=data
+        this.cd.detectChanges();},
+        error: (err) => this.errorMessage='Failed to load maintenance logs'
+      
     });
   }
 

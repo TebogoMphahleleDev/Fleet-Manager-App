@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { DriverService, Driver } from '../../services/driver.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -22,7 +22,7 @@ export class DriverListComponent implements OnInit {
    * Constructor for DriverListComponent.
    * @param driverService Service for managing driver data.
    */
-  constructor(private driverService: DriverService) {}
+  constructor(private driverService: DriverService,private cd: ChangeDetectorRef) {}
 
   /**
    * Initializes the component by loading the list of drivers.
@@ -36,8 +36,12 @@ export class DriverListComponent implements OnInit {
    */
   loadDrivers(): void {
     this.driverService.getDrivers().subscribe({
-      next: (data) => this.drivers = data,
-      error: (err) => this.errorMessage = 'Failed to load drivers'
+      next: (data) => {
+        console.log(data)
+        this.drivers = data
+        this.cd.detectChanges();},
+        error:(error) => this.errorMessage='Failed to load drivers'
+
     });
   }
 
@@ -47,8 +51,12 @@ export class DriverListComponent implements OnInit {
    */
   deleteDriver(id: string): void {
     this.driverService.deleteDriver(id).subscribe({
-      next: () => this.loadDrivers(),
-      error: (err) => this.errorMessage = 'Failed to delete driver'
+      next: () => 
+        { 
+          console.log('Driver deleted'); 
+          this.loadDrivers(); 
+        },
+      error:(error) => this.errorMessage='Failed to delete driver'
     });
   }
 }

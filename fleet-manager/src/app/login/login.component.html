@@ -1,33 +1,44 @@
 <div class="login-container">
+    <div class="form-header">
+        <h2>{{ isRegisterMode ? 'Create Account' : 'Welcome Back' }}</h2>
+        <p>{{ isRegisterMode ? 'Join our community today' : 'Sign in to your account' }}</p>
+    </div>
 
-    <h2>{{ isRegisterMode ? 'Register' : 'Login' }}</h2>
-
-    <form (ngSubmit)="isRegisterMode ? register() : login()">
-
-        <div>
-
-            <label for="username">Username:</label>
-
-            <input type="text" id="username" [(ngModel)]="username" name="username" required>
-
+    <form [formGroup]="loginForm" (ngSubmit)="isRegisterMode ? register() : login()">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <div class="input-container">
+                <i class="icon">✉️</i>
+                <input type="email" id="email" formControlName="email" placeholder="Enter your email">
+            </div>
+            <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error">
+                <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
+                <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email address</span>
+            </div>
         </div>
 
-        <div>
-
-            <label for="password">Password:</label>
-
-            <input type="password" id="password" [(ngModel)]="password" name="password" required>
-
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-container">
+                <i class="icon">🔒</i>
+                <input type="password" id="password" formControlName="password" placeholder="Enter your password">
+            </div>
+            <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error">
+                <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
+            </div>
         </div>
 
-        <button type="submit">{{ isRegisterMode ? 'Register' : 'Login' }}</button>
-
-        <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
-
+        <button type="submit" [disabled]="loginForm.invalid" class="submit-btn">
+            {{ isRegisterMode ? 'Create Account' : 'Sign In' }}
+            <span class="btn-loader"></span>
+        </button>
     </form>
 
-    <button type="button" (click)="toggleMode()" class="toggle-btn">
-        {{ isRegisterMode ? 'Already have an account? Login' : 'Need an account? Register' }}
-    </button>
+    <div class="divider">
+        <span>or</span>
+    </div>
 
+    <button type="button" (click)="toggleMode()" class="toggle-btn">
+        {{ isRegisterMode ? 'Already have an account? Sign In' : 'Need an account? Sign Up' }}
+    </button>
 </div>

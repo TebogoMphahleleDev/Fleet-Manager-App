@@ -12,14 +12,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let maintenance of maintenances">
-        <td>{{ maintenance.description }}</td>
-        <td>{{ maintenance.date }}</td>
-        <td>{{ maintenance.cost }}</td>
-        <td>
-          <button (click)="deleteMaintenance(maintenance.id)">Delete</button>
-        </td>
-      </tr>
+      @for (maintenance of maintenances; track maintenance.id) {
+        <tr>
+          <td>{{ maintenance.description }}</td>
+          <td>{{ maintenance.date }}</td>
+          <td>{{ maintenance.cost }}</td>
+          <td>
+            <button (click)="deleteMaintenance(maintenance.id)">Delete</button>
+          </td>
+        </tr>
+      }
     </tbody>
   </table>
   <p *ngIf="maintenances.length === 0">No maintenance records found.</p>

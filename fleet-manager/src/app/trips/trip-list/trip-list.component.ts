@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef,Component, OnInit } from '@angular/core';
 import { TripService, Trip } from '../../services/trip.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { error } from 'node:console';
 
 /**
  * Component for displaying a list of trips.
@@ -22,7 +23,7 @@ export class TripListComponent implements OnInit {
    * Constructor for TripListComponent.
    * @param tripService Service for managing trip data.
    */
-  constructor(private tripService: TripService) {}
+  constructor(private tripService: TripService , private cd:ChangeDetectorRef) {}
 
   /**
    * Initializes the component by loading the list of trips.
@@ -36,8 +37,12 @@ export class TripListComponent implements OnInit {
    */
   loadTrips(): void {
     this.tripService.getTrips().subscribe({
-      next: (data) => this.trips = data,
-      error: (err) => this.errorMessage = 'Failed to load trips'
+      next: (data) => {
+        console.log(data)
+        this.trips=data
+        this.cd.detectChanges();},
+        error: (error) => this.errorMessage='Failed to load trips'
+        
     });
   }
 

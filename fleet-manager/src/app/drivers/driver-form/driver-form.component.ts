@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DriverService, Driver } from '../../services/driver.service';
 import { VehicleService, Vehicle } from '../../services/vehicle.service';
+import { PopupService } from '../../services/popup.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -20,7 +21,6 @@ export class DriverFormComponent implements OnInit {
   driverForm: FormGroup;
   driverId: string | null = null;
   vehicles: Vehicle[] = [];
-  errorMessage: string = '';
 
   /**
    * Constructor for DriverFormComponent.
@@ -36,12 +36,13 @@ export class DriverFormComponent implements OnInit {
     private driverService: DriverService,
     private vehicleService: VehicleService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private popupService: PopupService
   ) {
     this.driverForm = this.fb.group({
       name: ['', Validators.required],
       vehicle_id: [''],
-      numberOfExperience: [0],
+      numberOfExperience: [0, [Validators.min(0), Validators.pattern(/^\d+$/)]],
       licenseNumber: [''],
       contactInfo: ['']
     });
@@ -64,7 +65,7 @@ export class DriverFormComponent implements OnInit {
   loadVehicles(): void {
     this.vehicleService.getVehicles().subscribe({
       next: (data) => this.vehicles = data,
-      error: () => this.errorMessage = 'Failed to load vehicles'
+      error: () => this.popupService.showError('Failed to load vehicles')
     });
   }
 
@@ -79,10 +80,10 @@ export class DriverFormComponent implements OnInit {
         if (driver) {
           this.driverForm.patchValue(driver);
         } else {
-          this.errorMessage = 'Driver not found';
+          this.popupService.showError('Driver not found');
         }
       },
-      error: () => this.errorMessage = 'Failed to load driver'
+      error: () => this.popupService.showError('Failed to load driver')
     });
   }
 
@@ -96,13 +97,19 @@ export class DriverFormComponent implements OnInit {
     const driverData = this.driverForm.value;
     if (this.driverId) {
       this.driverService.updateDriver(this.driverId, driverData).subscribe({
-        next: () => this.router.navigate(['/drivers']),
-        error: () => this.errorMessage = 'Failed to update driver'
+        next: () => {
+          this.popupService.showSuccess('Driver updated successfully');
+          this.router.navigate(['/drivers']);
+        },
+        error: () => this.popupService.showError('Failed to update driver')
       });
     } else {
       this.driverService.addDriver(driverData).subscribe({
-        next: () => this.router.navigate(['/drivers']),
-        error: () => this.errorMessage = 'Failed to add driver'
+        next: () => {
+          this.popupService.showSuccess('Driver added successfully');
+          this.router.navigate(['/drivers']);
+        },
+        error: () => this.popupService.showError('Failed to add driver')
       });
     }
   }

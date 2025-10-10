@@ -9,6 +9,7 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from typing import Optional
 from pydantic import BaseModel
+from sqlalchemy import Float, Date
 
 # Database configuration
 DATABASE_URL = "sqlite:///./fleet_manager.db"
@@ -24,11 +25,11 @@ class User(Base):
     """
     SQLAlchemy model for User.
 
-    Represents a user in the database with username and hashed password.
+    Represents a user in the database with email and hashed password.
     """
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
 
 from sqlalchemy import Date
@@ -86,9 +87,9 @@ class UserCreate(BaseModel):
     """
     Pydantic model for user creation.
 
-    Used for registering new users with username and password.
+    Used for registering new users with email and password.
     """
-    username: str
+    email: str
     password: str
 
 from typing import Optional
@@ -223,32 +224,32 @@ def get_password_hash(password):
     """
     return pwd_context.hash(password)
 
-def get_user(db: Session, username: str):
+def get_user(db: Session, email: str):
     """
-    Retrieves a user from the database by username.
+    Retrieves a user from the database by email.
 
     Args:
         db (Session): The database session.
-        username (str): The username to search for.
+        email (str): The email to search for.
 
     Returns:
         User or None: The user object if found, None otherwise.
     """
-    return db.query(User).filter(User.username == username).first()
+    return db.query(User).filter(User.email == email).first()
 
-def authenticate_user(db: Session, username: str, password: str):
+def authenticate_user(db: Session, email: str, password: str):
     """
-    Authenticates a user by username and password.
+    Authenticates a user by email and password.
 
     Args:
         db (Session): The database session.
-        username (str): The username.
+        email (str): The email.
         password (str): The password.
 
     Returns:
         User or False: The user object if authenticated, False otherwise.
     """
-    user = get_user(db, username)
+    user = get_user(db, email)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -299,13 +300,13 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
         dict: A message indicating successful registration.
 
     Raises:
-        HTTPException: If the username is already registered.
+        HTTPException: If the email is already registered.
     """
-    db_user = get_user(db, user.username)
+    db_user = get_user(db, user.email)
     if db_user:
-        raise HTTPException(status_code=400, detail="Username already registered")
+        raise HTTPException(status_code=400, detail="Email already registered")
     hashed_password = get_password_hash(user.password)
-    new_user = User(username=user.username, hashed_password=hashed_password)
+    new_user = User(email=user.email, hashed_password=hashed_password)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -331,12 +332,12 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.email}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 

@@ -14,7 +14,7 @@ import { RouterLink } from '@angular/router';
   imports: [CommonModule, RouterLink],
   standalone: true
 })
-export class VehicleListComponent implements OnInit, AfterViewInit {
+export class VehicleListComponent implements OnInit {
   vehicles: Vehicle[] = [];
   errorMessage: string = '';
 
@@ -23,47 +23,31 @@ export class VehicleListComponent implements OnInit, AfterViewInit {
    * @param vehicleService Service for managing vehicle data.
    * @param cdr ChangeDetectorRef for manual change detection.
    */
-  constructor(private vehicleService: VehicleService,
-    private cdr: ChangeDetectorRef
+  constructor(private vehicleService: VehicleService,private cd:ChangeDetectorRef
+   
   ) {}
 
   /**
-   * Initializes the component and triggers change detection.
+   * Initializes the component by loading the list of vehicle.
    */
   ngOnInit(): void {
-    // this.loadVehicles();
-
-    console.log("VehicleListComponent initialized");
-
-    this.cdr.detectChanges();
-
-  }
-
-  /**
-   * Lifecycle hook called after the view is initialized, loads the vehicles.
-   */
-  ngAfterViewInit(): void {
     this.loadVehicles();
   }
 
+  
+  
   /**
    * Loads the list of vehicles from the service using the v2 method.
    */
   loadVehicles(): void {
-    // this.vehicleService.getVehicles().subscribe({
-    //   next: (data:Vehicle[]) => {
-    //     // this.vehicles = data
-    //     console.log('Vehicles loaded:', this.vehicles);
-    //   },
-    //   error: (err) => this.errorMessage = 'Failed to load vehicles'
-    // });
-
-    this.vehicleService.getVehicles_v2().then(data => {
-      this.vehicles = data
-      console.log('Vehicles loaded from v2:', data);
+    this.vehicleService.getVehicles().subscribe({
+      next: (data) => {
+        console.log(data)
+        this.vehicles = data
+        this.cd.detectChanges();},
+        error:(error) => this.errorMessage='Failed to load vehicles'
+      
     });
-
-
   }
 
   /**

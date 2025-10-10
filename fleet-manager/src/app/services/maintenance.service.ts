@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { Observable, from } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 /**
  * Interface representing a Maintenance entity.
@@ -31,7 +32,8 @@ export class MaintenanceService {
   getMaintenances(): Observable<Maintenance[]> {
     const maintenancesCollection = collection(this.firestore, this.collectionName);
     return from(getDocs(maintenancesCollection)).pipe(
-      map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Maintenance)))
+      map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Maintenance))),
+      catchError(error => throwError(() => error))
     );
   }
 
@@ -43,7 +45,8 @@ export class MaintenanceService {
   addMaintenance(maintenance: Omit<Maintenance, 'id'>): Observable<Maintenance> {
     const maintenancesCollection = collection(this.firestore, this.collectionName);
     return from(addDoc(maintenancesCollection, maintenance)).pipe(
-      map(docRef => ({ id: docRef.id, ...maintenance } as Maintenance))
+      map(docRef => ({ id: docRef.id, ...maintenance } as Maintenance)),
+      catchError(error => throwError(() => error))
     );
   }
 
@@ -55,7 +58,9 @@ export class MaintenanceService {
    */
   updateMaintenance(id: string, maintenance: Omit<Maintenance, 'id'>): Observable<void> {
     const maintenanceDoc = doc(this.firestore, this.collectionName, id);
-    return from(updateDoc(maintenanceDoc, maintenance));
+    return from(updateDoc(maintenanceDoc, maintenance)).pipe(
+      catchError(error => throwError(() => error))
+    );
   }
 
   /**
@@ -65,6 +70,8 @@ export class MaintenanceService {
    */
   deleteMaintenance(id: string): Observable<void> {
     const maintenanceDoc = doc(this.firestore, this.collectionName, id);
-    return from(deleteDoc(maintenanceDoc));
+    return from(deleteDoc(maintenanceDoc)).pipe(
+      catchError(error => throwError(() => error))
+    );
   }
 }

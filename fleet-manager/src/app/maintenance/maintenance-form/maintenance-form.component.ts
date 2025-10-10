@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MaintenanceService, Maintenance } from '../../services/maintenance.service';
 import { VehicleService, Vehicle } from '../../services/vehicle.service';
+import { PopupService } from '../../services/popup.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -19,7 +20,6 @@ import { CommonModule } from '@angular/common';
 export class MaintenanceFormComponent implements OnInit {
   maintenanceForm: FormGroup;
   maintenanceId: string | null = null;
-  errorMessage: string = '';
   vehicles: Vehicle[] = [];
 
   /**
@@ -36,7 +36,8 @@ export class MaintenanceFormComponent implements OnInit {
     private maintenanceService: MaintenanceService,
     private vehicleService: VehicleService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private popupService: PopupService
   ) {
     this.maintenanceForm = this.fb.group({
       vehicle_id: ['', Validators.required],
@@ -63,7 +64,7 @@ export class MaintenanceFormComponent implements OnInit {
   loadVehicles(): void {
     this.vehicleService.getVehicles().subscribe({
       next: (data) => this.vehicles = data,
-      error: () => this.errorMessage = 'Failed to load vehicles'
+      error: () => this.popupService.showError('Failed to load vehicles')
     });
   }
 
@@ -78,10 +79,10 @@ export class MaintenanceFormComponent implements OnInit {
         if (maintenance) {
           this.maintenanceForm.patchValue(maintenance);
         } else {
-          this.errorMessage = 'Maintenance not found';
+          this.popupService.showError('Maintenance not found');
         }
       },
-      error: () => this.errorMessage = 'Failed to load maintenance'
+      error: () => this.popupService.showError('Failed to load maintenance')
     });
   }
 
@@ -95,13 +96,19 @@ export class MaintenanceFormComponent implements OnInit {
     const maintenanceData = this.maintenanceForm.value;
     if (this.maintenanceId) {
       this.maintenanceService.updateMaintenance(this.maintenanceId, maintenanceData).subscribe({
-        next: () => this.router.navigate(['/maintenance']),
-        error: (err) => this.errorMessage = err.message || 'Failed to update maintenance'
+        next: () => {
+          this.popupService.showSuccess('Maintenance updated successfully');
+          this.router.navigate(['/maintenance']);
+        },
+        error: () => this.popupService.showError('Failed to update maintenance')
       });
     } else {
       this.maintenanceService.addMaintenance(maintenanceData).subscribe({
-        next: () => this.router.navigate(['/maintenance']),
-        error: (err) => this.errorMessage = err.message || 'Failed to add maintenance'
+        next: () => {
+          this.popupService.showSuccess('Maintenance added successfully');
+          this.router.navigate(['/maintenance']);
+        },
+        error: () => this.popupService.showError('Failed to add maintenance')
       });
     }
   }

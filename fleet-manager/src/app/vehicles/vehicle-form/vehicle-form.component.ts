@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VehicleService, Vehicle } from '../../services/vehicle.service';
+import { PopupService } from '../../services/popup.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -18,7 +19,6 @@ import { CommonModule } from '@angular/common';
 export class VehicleFormComponent implements OnInit {
   vehicleForm: FormGroup;
   vehicleId: string | null = null;
-  errorMessage: string = '';
 
   /**
    * Constructor for VehicleFormComponent.
@@ -27,12 +27,14 @@ export class VehicleFormComponent implements OnInit {
    * @param vehicleService Service for managing vehicle data.
    * @param route ActivatedRoute for accessing route parameters.
    * @param router Router for navigation.
+   * @param popupService Service for showing popup notifications.
    */
   constructor(
     private fb: FormBuilder,
     private vehicleService: VehicleService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private popupService: PopupService
   ) {
     this.vehicleForm = this.fb.group({
       name: ['', Validators.required],
@@ -41,7 +43,7 @@ export class VehicleFormComponent implements OnInit {
       color: [''],
       registrationNumber: [''],
       licenseExpiryDate: [''],
-      yearOfCar: ['']
+      yearOfCar: [null, [Validators.required, Validators.min(1900), Validators.max(2024)]]
     });
   }
 
@@ -66,10 +68,10 @@ export class VehicleFormComponent implements OnInit {
         if (vehicle) {
           this.vehicleForm.patchValue(vehicle);
         } else {
-          this.errorMessage = 'Vehicle not found';
+          this.popupService.showError('Vehicle not found');
         }
       },
-      error: () => this.errorMessage = 'Failed to load vehicle'
+      error: () => this.popupService.showError('Failed to load vehicle')
     });
   }
 
@@ -83,13 +85,19 @@ export class VehicleFormComponent implements OnInit {
     const vehicleData = this.vehicleForm.value;
     if (this.vehicleId) {
       this.vehicleService.updateVehicle(this.vehicleId, vehicleData).subscribe({
-        next: () => this.router.navigate(['/vehicles']),
-        error: () => this.errorMessage = 'Failed to update vehicle'
+        next: () => {
+          this.popupService.showSuccess('Vehicle updated successfully');
+          this.router.navigate(['/vehicles']);
+        },
+        error: () => this.popupService.showError('Failed to update vehicle')
       });
     } else {
       this.vehicleService.addVehicle(vehicleData).subscribe({
-        next: () => this.router.navigate(['/vehicles']),
-        error: () => this.errorMessage = 'Failed to add vehicle'
+        next: () => {
+          this.popupService.showSuccess('Vehicle added successfully');
+          this.router.navigate(['/vehicles']);
+        },
+        error: () => this.popupService.showError('Failed to add vehicle')
       });
     }
   }

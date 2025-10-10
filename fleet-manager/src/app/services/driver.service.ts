@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { Observable, from } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 /**
  * Interface representing a Driver entity.
@@ -32,7 +33,8 @@ export class DriverService {
   getDrivers(): Observable<Driver[]> {
     const driversCollection = collection(this.firestore, this.collectionName);
     return from(getDocs(driversCollection)).pipe(
-      map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Driver)))
+      map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Driver))),
+      catchError(error => throwError(() => error))
     );
   }
 
@@ -44,7 +46,8 @@ export class DriverService {
   addDriver(driver: Omit<Driver, 'id'>): Observable<Driver> {
     const driversCollection = collection(this.firestore, this.collectionName);
     return from(addDoc(driversCollection, driver)).pipe(
-      map(docRef => ({ id: docRef.id, ...driver } as Driver))
+      map(docRef => ({ id: docRef.id, ...driver } as Driver)),
+      catchError(error => throwError(() => error))
     );
   }
 
@@ -56,7 +59,9 @@ export class DriverService {
    */
   updateDriver(id: string, driver: Omit<Driver, 'id'>): Observable<void> {
     const driverDoc = doc(this.firestore, this.collectionName, id);
-    return from(updateDoc(driverDoc, driver));
+    return from(updateDoc(driverDoc, driver)).pipe(
+      catchError(error => throwError(() => error))
+    );
   }
 
   /**
@@ -66,6 +71,8 @@ export class DriverService {
    */
   deleteDriver(id: string): Observable<void> {
     const driverDoc = doc(this.firestore, this.collectionName, id);
-    return from(deleteDoc(driverDoc));
+    return from(deleteDoc(driverDoc)).pipe(
+      catchError(error => throwError(() => error))
+    );
   }
 }

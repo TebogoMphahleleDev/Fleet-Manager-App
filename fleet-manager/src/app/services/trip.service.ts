@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { Observable, from } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 /**
  * Interface representing a Trip entity.
@@ -33,7 +34,8 @@ export class TripService {
   getTrips(): Observable<Trip[]> {
     const tripsCollection = collection(this.firestore, this.collectionName);
     return from(getDocs(tripsCollection)).pipe(
-      map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Trip)))
+      map(snapshot => snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Trip))),
+      catchError(error => throwError(() => error))
     );
   }
 
@@ -45,7 +47,8 @@ export class TripService {
   addTrip(trip: Omit<Trip, 'id'>): Observable<Trip> {
     const tripsCollection = collection(this.firestore, this.collectionName);
     return from(addDoc(tripsCollection, trip)).pipe(
-      map(docRef => ({ id: docRef.id, ...trip } as Trip))
+      map(docRef => ({ id: docRef.id, ...trip } as Trip)),
+      catchError(error => throwError(() => error))
     );
   }
 
@@ -57,7 +60,9 @@ export class TripService {
    */
   updateTrip(id: string, trip: Omit<Trip, 'id'>): Observable<void> {
     const tripDoc = doc(this.firestore, this.collectionName, id);
-    return from(updateDoc(tripDoc, trip));
+    return from(updateDoc(tripDoc, trip)).pipe(
+      catchError(error => throwError(() => error))
+    );
   }
 
   /**
@@ -67,6 +72,8 @@ export class TripService {
    */
   deleteTrip(id: string): Observable<void> {
     const tripDoc = doc(this.firestore, this.collectionName, id);
-    return from(deleteDoc(tripDoc));
+    return from(deleteDoc(tripDoc)).pipe(
+      catchError(error => throwError(() => error))
+    );
   }
 }
