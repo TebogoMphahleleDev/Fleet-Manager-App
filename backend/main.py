@@ -1,15 +1,15 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float, Date, func, extract
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy import text
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from typing import Optional
 from pydantic import BaseModel
-from sqlalchemy import Float, Date
 
 # Database configuration
 DATABASE_URL = "sqlite:///./fleet_manager.db"
@@ -78,6 +78,20 @@ class Trip(Base):
     end_location = Column(String, nullable=False)
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime, nullable=False)
+
+class Maintenance(Base):
+    """
+    SQLAlchemy model for Maintenance records.
+
+    Represents maintenance activities with costs and dates.
+    """
+    __tablename__ = "maintenance"
+    id = Column(Integer, primary_key=True, index=True)
+    vehicle_id = Column(Integer, nullable=False)
+    description = Column(String, nullable=False)
+    cost = Column(Float, nullable=False)
+    maintenance_date = Column(Date, nullable=False)
+    next_maintenance_date = Column(Date, nullable=True)
 
 Base.metadata.create_all(bind=engine)
 
@@ -179,7 +193,57 @@ class TripSchema(BaseModel):
     class Config:
         from_attributes = True
 
+class DashboardStats(BaseModel):
+    """
+    Pydantic model for dashboard statistics.
+    """
 
+    total_vehicles: int
+    total_drivers: int
+    total_trips: int
+    trips_this_month: int
+    maintenance_costs: float
+
+class MonthlyTripData(BaseModel):    
+    """
+    Pydantic model for monthly trip data.
+    """
+    month: str
+    trip_count: int
+
+    
+class MaintenanceCostData(BaseModel):
+    """
+    Pydantic model for maintenance cost data.
+    """
+    month: str
+    cost: float
+
+class DashboardSummary(BaseModel):
+    """
+    Pydantic model for complete dashboard summary.
+    """
+    stats: DashboardStats
+    monthly_trips: List[MonthlyTripData]
+    maintenance_costs: List[MaintenanceCostData]    
+
+class MaintenanceCreate(BaseModel):
+    vehicle_id: int
+    description: str
+    cost: float
+    maintenance_date: date
+    next_maintenance_date: Optional[date] = None
+
+class MaintenanceSchema(BaseModel):
+    id: int
+    vehicle_id: int
+    description: str
+    cost: float
+    maintenance_date: date
+    next_maintenance_date: Optional[date] = None
+
+    class Config:
+        from_attributes = True
 # Security
 SECRET_KEY = "your_secret_key_here_change_this"
 ALGORITHM = "HS256"
@@ -444,3 +508,142 @@ def create_trip(trip: TripCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_trip)
     return db_trip
+
+# Dashboard endpoints
+@app.get("/stats/summary", response_model=DashboardStats)
+def get_dashboard_summary(db: Session = Depends(get_db)):
+    """
+    Get dashboard summary statistics including counts and monthly data.
+    """
+    # Total Counts
+    total_vehicles = db.query(func.count(Vehicle.id)).scalar() or 0
+    total_drivers = db.query(func.count(Driver.id)).scalar() or 0
+    total_trips = db.query(func.count(Trip.id)).scalar() or 0
+
+    # Trips this month (current month)
+    current_month = datetime.now().month
+    current_year = datetime.now().year
+    trips_this_month = db.query(func.count(Trip.id)).filter(
+        extract('month', Trip.start_time) == current_month,
+        extract('year', Trip.start_time) == current_year
+    ).scalar() or 0
+
+    # Total maintenance costs (from last 12 months)
+    one_year_ago = datetime.now() - timedelta(days=365)
+    maintenance_costs = db.query(func.coalesce(func.sum(Maintenance.cost), 0)).filter(
+        Maintenance.maintenance_date >= one_year_ago
+    ).scalar() or 0.0
+
+    return DashboardStats(
+        total_vehicles=total_vehicles,
+        total_drivers=total_drivers,
+        total_trips=total_trips,
+        trips_this_month=trips_this_month,
+        maintenance_costs=maintenance_costs
+    )
+@app.get("/stats/monthly-trips", response_model=List[MonthlyTripData])
+def get_monthly_trips(db: Session = Depends(get_db)):
+    """
+    Get monthly trip counts for the last 12 months.
+    """
+    # Calculate date 12 months ago
+    twelve_months_ago = datetime.now() - timedelta(days=365)
+    
+    # Query for monthly trip counts
+    monthly_trips = db.query(
+        func.strftime('%Y-%m', Trip.start_time).label('month'),
+        func.count(Trip.id).label('trip_count')
+    ).filter(
+        Trip.start_time >= twelve_months_ago
+    ).group_by(
+        func.strftime('%Y-%m', Trip.start_time)
+    ).order_by(
+        func.strftime('%Y-%m', Trip.start_time)
+    ).all()
+    
+    # Format the response
+    result = []
+    for month_data in monthly_trips:
+        result.append(MonthlyTripData(
+            month=month_data.month,
+            trip_count=month_data.trip_count
+        ))
+    
+    return result
+
+@app.get("/stats/maintenance-costs", response_model=List[MaintenanceCostData])
+def get_maintenance_costs(db: Session = Depends(get_db)):
+    """
+    Get monthly maintenance costs for the last 12 months.
+    """
+    # Calculate date 12 months ago
+    twelve_months_ago = datetime.now() - timedelta(days=365)
+    
+    # Query for monthly maintenance costs
+    monthly_costs = db.query(
+        func.strftime('%Y-%m', Maintenance.maintenance_date).label('month'),
+        func.coalesce(func.sum(Maintenance.cost), 0).label('total_cost')
+    ).filter(
+        Maintenance.maintenance_date >= twelve_months_ago
+    ).group_by(
+        func.strftime('%Y-%m', Maintenance.maintenance_date)
+    ).order_by(
+        func.strftime('%Y-%m', Maintenance.maintenance_date)
+    ).all()
+    
+    # Format the response
+    result = []
+    for cost_data in monthly_costs:
+        result.append(MaintenanceCostData(
+            month=cost_data.month,
+            cost=cost_data.total_cost or 0.0
+        ))
+    
+    return result
+
+@app.get("/stats/dashboard", response_model=DashboardSummary)
+def get_complete_dashboard(db: Session = Depends(get_db)):
+    """
+    Get complete dashboard data including all statistics and charts data.
+    """
+    stats = get_dashboard_summary(db)
+    monthly_trips = get_monthly_trips(db)
+    maintenance_costs = get_maintenance_costs(db)
+    
+    return DashboardSummary(
+        stats=stats,
+        monthly_trips=monthly_trips,
+        maintenance_costs=maintenance_costs
+    )
+
+# Maintenance endpoints (for managing maintenance records)
+@app.get("/maintenance", response_model=List[MaintenanceSchema])
+def get_maintenance_records(db: Session = Depends(get_db)):
+    """
+    Get all maintenance records.
+    """
+    return db.query(Maintenance).all()
+
+@app.post("/maintenance", response_model=MaintenanceSchema)
+def create_maintenance_record(maintenance: MaintenanceCreate, db: Session = Depends(get_db)):
+    """
+    Create a new maintenance record.
+    """
+    db_maintenance = Maintenance(
+        vehicle_id=maintenance.vehicle_id,
+        description=maintenance.description,
+        cost=maintenance.cost,
+        maintenance_date=maintenance.maintenance_date,
+        next_maintenance_date=maintenance.next_maintenance_date
+    )
+    db.add(db_maintenance)
+    db.commit()
+    db.refresh(db_maintenance)
+    return db_maintenance
+
+@app.get("/maintenance/vehicle/{vehicle_id}", response_model=List[MaintenanceSchema])
+def get_maintenance_by_vehicle(vehicle_id: int, db: Session = Depends(get_db)):
+    """
+    Get maintenance records for a specific vehicle.
+    """
+    return db.query(Maintenance).filter(Maintenance.vehicle_id == vehicle_id).all()

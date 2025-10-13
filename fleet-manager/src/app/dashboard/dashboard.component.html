@@ -3,33 +3,86 @@
     <h1>Fleet Manager Dashboard</h1>
     <p>Manage your fleet operations</p>
   </div>
-  
+
+  <!-- Statistics Cards -->
+  @if (!loading && stats) {
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">🚗</div>
+      <div class="stat-content">
+        <h3>{{ stats.total_vehicles }}</h3>
+        <p>Total Vehicles</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">👤</div>
+      <div class="stat-content">
+        <h3>{{ stats.total_drivers }}</h3>
+        <p>Total Drivers</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📍</div>
+      <div class="stat-content">
+        <h3>{{ stats.total_trips }}</h3>
+        <p>Total Trips</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📅</div>
+      <div class="stat-content">
+        <h3>{{ stats.trips_this_month }}</h3>
+        <p>Trips This Month</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-content">
+        <h3>R{{ stats.maintenance_costs.toFixed(2) }}</h3>
+        <p>Maintenance Costs (12 Months)</p>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading) {
+  <div class="loading">
+    <p>Loading dashboard statistics...</p>
+  </div>
+  }
+
+  <!-- Management Links -->
   <div class="links-grid">
     <a routerLink="/vehicles" class="dashboard-card">
       <div class="card-icon">🚗</div>
       <h3>Manage Vehicles</h3>
       <p>View and manage your vehicle fleet</p>
     </a>
-    
+
     <a routerLink="/drivers" class="dashboard-card">
       <div class="card-icon">👤</div>
       <h3>Manage Drivers</h3>
       <p>Handle driver information and assignments</p>
     </a>
-    
+
     <a routerLink="/trips" class="dashboard-card">
       <div class="card-icon">📍</div>
       <h3>Manage Trips</h3>
       <p>Schedule and track vehicle trips</p>
     </a>
-    
+
     <a routerLink="/maintenance" class="dashboard-card">
       <div class="card-icon">🔧</div>
       <h3>Manage Maintenance</h3>
       <p>Track maintenance and repairs</p>
     </a>
   </div>
-  
+
   <button (click)="logout()" class="logout-btn">
     <span class="logout-icon">🚪</span>
     Logout
