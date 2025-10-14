@@ -9,11 +9,36 @@ import { throwError } from 'rxjs';
  * This ensures type safety when working with dashboard stats throughout the application.
  */
 export interface DashboardStats {
-  total_vehicles: number;     
-  total_drivers: number;     
-  total_trips: number;        
-  trips_this_month: number;   
-  maintenance_costs: number;  
+  total_vehicles: number;
+  total_drivers: number;
+  total_trips: number;
+  trips_this_month: number;
+  maintenance_costs: number;
+}
+
+/**
+ * Interface for monthly trip data.
+ */
+export interface MonthlyTripData {
+  month: string;
+  trip_count: number;
+}
+
+/**
+ * Interface for maintenance cost data.
+ */
+export interface MaintenanceCostData {
+  month: string;
+  cost: number;
+}
+
+/**
+ * Interface for complete dashboard summary.
+ */
+export interface DashboardSummary {
+  stats: DashboardStats;
+  monthly_trips: MonthlyTripData[];
+  maintenance_costs: MaintenanceCostData[];
 }
 
 /**
@@ -118,34 +143,192 @@ export class DashboardService {
    * It looks at the 'date' field in maintenance documents.
    */
   private async getMaintenanceCosts(): Promise<number> {
-    
+
     const collectionRef = collection(this.firestore, 'maintenances');
     const snapshot = await getDocs(collectionRef);
 
-    let totalCost = 0; 
+    let totalCost = 0;
     // Calculate what date was 12 months ago
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
     snapshot.forEach(doc => {
       const data = doc.data();
-      if (data['cost'] && data['date']) {  
-        
+      if (data['cost'] && data['date']) {
+
         let maintenanceDate: Date;
         if (typeof data['date'] === 'string') {
           maintenanceDate = new Date(data['date']);
         } else if (data['date'].seconds) {
           maintenanceDate = new Date(data['date'].seconds * 1000);
         } else {
-          return; 
+          return;
         }
 
-        
+
         if (maintenanceDate >= oneYearAgo) {
-          totalCost += data['cost'];  
+          totalCost += data['cost'];
         }
       }
     });
+
+    // Also include fuel expenses in maintenance costs
+    const fuelExpensesRef = collection(this.firestore, 'fuel_expenses');
+    const fuelSnapshot = await getDocs(fuelExpensesRef);
+
+    fuelSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data['cost'] && data['expense_date']) {
+        let expenseDate: Date;
+        if (typeof data['expense_date'] === 'string') {
+          expenseDate = new Date(data['expense_date']);
+        } else if (data['expense_date'].seconds) {
+          expenseDate = new Date(data['expense_date'].seconds * 1000);
+        } else {
+          return;
+        }
+
+        if (expenseDate >= oneYearAgo) {
+          totalCost += data['cost'];
+        }
+      }
+    });
+
     return totalCost;
+  }
+
+  /**
+   * Get monthly trip data for the last 12 months.
+   */
+  getMonthlyTrips(): Observable<MonthlyTripData[]> {
+    return from(this.getMonthlyTripsData()).pipe(
+      map(data => data),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  /**
+   * Get monthly maintenance cost data for the last 12 months.
+   */
+  getMonthlyMaintenanceCosts(): Observable<MaintenanceCostData[]> {
+    return from(this.getMonthlyMaintenanceCostsData()).pipe(
+      map(data => data),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  /**
+   * Get complete dashboard summary including stats and chart data.
+   */
+  getDashboardSummary(): Observable<DashboardSummary> {
+    return from(Promise.all([
+      this.getDashboardStats().toPromise(),
+      this.getMonthlyTripsData(),
+      this.getMonthlyMaintenanceCostsData()
+    ])).pipe(
+      map(([stats, monthly_trips, maintenance_costs]) => ({
+        stats: stats!,
+        monthly_trips,
+        maintenance_costs
+      })),
+      catchError(error => throwError(() => error))
+    );
+  }
+
+  private async getMonthlyTripsData(): Promise<MonthlyTripData[]> {
+    const collectionRef = collection(this.firestore, 'trips');
+    const snapshot = await getDocs(collectionRef);
+
+    const monthlyData: { [key: string]: number } = {};
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data['start_time']) {
+        let startTime: Date;
+        if (typeof data['start_time'] === 'string') {
+          startTime = new Date(data['start_time']);
+        } else if (data['start_time'].seconds) {
+          startTime = new Date(data['start_time'].seconds * 1000);
+        } else {
+          return;
+        }
+
+        const monthKey = `${startTime.getFullYear()}-${String(startTime.getMonth() + 1).padStart(2, '0')}`;
+        monthlyData[monthKey] = (monthlyData[monthKey] || 0) + 1;
+      }
+    });
+
+    // Get last 12 months
+    const result: MonthlyTripData[] = [];
+    const now = new Date();
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      result.push({
+        month: monthKey,
+        trip_count: monthlyData[monthKey] || 0
+      });
+    }
+
+    return result;
+  }
+
+  private async getMonthlyMaintenanceCostsData(): Promise<MaintenanceCostData[]> {
+    const collectionRef = collection(this.firestore, 'maintenances');
+    const snapshot = await getDocs(collectionRef);
+
+    const monthlyData: { [key: string]: number } = {};
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data['cost'] && data['date']) {
+        let maintenanceDate: Date;
+        if (typeof data['date'] === 'string') {
+          maintenanceDate = new Date(data['date']);
+        } else if (data['date'].seconds) {
+          maintenanceDate = new Date(data['date'].seconds * 1000);
+        } else {
+          return;
+        }
+
+        const monthKey = `${maintenanceDate.getFullYear()}-${String(maintenanceDate.getMonth() + 1).padStart(2, '0')}`;
+        monthlyData[monthKey] = (monthlyData[monthKey] || 0) + data['cost'];
+      }
+    });
+
+    // Also include fuel expenses
+    const fuelExpensesRef = collection(this.firestore, 'fuel_expenses');
+    const fuelSnapshot = await getDocs(fuelExpensesRef);
+
+    fuelSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data['cost'] && data['expense_date']) {
+        let expenseDate: Date;
+        if (typeof data['expense_date'] === 'string') {
+          expenseDate = new Date(data['expense_date']);
+        } else if (data['expense_date'].seconds) {
+          expenseDate = new Date(data['expense_date'].seconds * 1000);
+        } else {
+          return;
+        }
+
+        const monthKey = `${expenseDate.getFullYear()}-${String(expenseDate.getMonth() + 1).padStart(2, '0')}`;
+        monthlyData[monthKey] = (monthlyData[monthKey] || 0) + data['cost'];
+      }
+    });
+
+    // Get last 12 months
+    const result: MaintenanceCostData[] = [];
+    const now = new Date();
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      result.push({
+        month: monthKey,
+        cost: monthlyData[monthKey] || 0
+      });
+    }
+
+    return result;
   }
 }

@@ -1,8 +1,22 @@
 <div class="maintenance-list">
-  <h2>Maintenance Records</h2>
-  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
-  <a routerLink="/maintenance/form" class="add-button">Add Maintenance</a>
-  <table *ngIf="maintenances.length > 0">
+  <div class="list-header">
+    <button routerLink="/dashboard" class="back-btn">
+      <span class="btn-icon">⬅️</span>
+      Back to Dashboard
+    </button>
+    <h2>Maintenance Records</h2>
+    <a routerLink="/maintenance/form" class="add-btn">
+      <span class="btn-icon">➕</span>
+      Add Maintenance
+    </a>
+  </div>
+
+  @if (errorMessage) {
+  <p class="error">{{ errorMessage }}</p>
+  }
+
+  @if (maintenances.length > 0) {
+  <table>
     <thead>
       <tr>
         <th>Description</th>
@@ -24,5 +38,9 @@
       }
     </tbody>
   </table>
-  <p *ngIf="maintenances.length === 0">No maintenance records found.</p>
+  }
+
+  @if (maintenances.length === 0) {
+  <p>No maintenance records found.</p>
+  }
 </div>

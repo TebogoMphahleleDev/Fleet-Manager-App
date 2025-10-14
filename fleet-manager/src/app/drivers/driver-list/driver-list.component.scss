@@ -13,6 +13,27 @@
   gap: 16px;
 }
 
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #718096;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.back-btn:hover {
+  background: #4a5568;
+  transform: translateY(-1px);
+}
+
 .list-header h2 {
   font-size: 2rem;
   font-weight: 700;

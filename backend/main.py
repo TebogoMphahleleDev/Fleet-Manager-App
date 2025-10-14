@@ -92,6 +92,25 @@ class Maintenance(Base):
     cost = Column(Float, nullable=False)
     maintenance_date = Column(Date, nullable=False)
     next_maintenance_date = Column(Date, nullable=True)
+    
+class FuelExpense(Base):
+    """
+    SQLAlchemy model for Fuel and Expense records.
+
+    Represents fuel consumption and other expenses per vehicle.
+    """
+    __tablename__ = "fuel_expenses"
+    id = Column(Integer, primary_key=True, index=True)
+    vehicle_id = Column(Integer, nullable=False)
+    driver_id = Column(Integer, nullable=True)
+    expense_type = Column(String, nullable=False)  
+    fuel_type = Column(String, nullable=True)  
+    quantity = Column(Float, nullable=True)  
+    cost = Column(Float, nullable=False)  
+    odometer_reading = Column(Float, nullable=True) 
+    location = Column(String, nullable=True)  
+    expense_date = Column(Date, nullable=False)
+    notes = Column(String, nullable=True)
 
 Base.metadata.create_all(bind=engine)
 
@@ -244,6 +263,54 @@ class MaintenanceSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+class FuelExpenseCreate(BaseModel):
+    vehicle_id: int
+    driver_id: Optional[int] = None
+    expense_type: str  
+    fuel_type: Optional[str] = None  
+    quantity: Optional[float] = None  
+    cost: float 
+    odometer_reading: Optional[float] = None  
+    location: Optional[str] = None  
+    expense_date: date
+    notes: Optional[str] = None
+
+class FuelExpenseUpdate(BaseModel):
+    vehicle_id: int
+    driver_id: Optional[int] = None
+    expense_type: str
+    fuel_type: Optional[str] = None
+    quantity: Optional[float] = None
+    cost: float
+    odometer_reading: Optional[float] = None
+    location: Optional[str] = None
+    expense_date: date
+    notes: Optional[str] = None
+
+class FuelExpenseSchema(BaseModel):
+    id: int
+    vehicle_id: int
+    driver_id: Optional[int] = None
+    expense_type: str
+    fuel_type: Optional[str] = None
+    quantity: Optional[float] = None
+    cost: float
+    odometer_reading: Optional[float] = None
+    location: Optional[str] = None
+    expense_date: date
+    notes: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class FuelExpenseStats(BaseModel):
+    total_fuel_costs: float
+    total_other_expenses: float
+    fuel_efficiency: Optional[float] = None  # km/l 
+    average_cost_per_km: Optional[float] = None
+
+        
 # Security
 SECRET_KEY = "your_secret_key_here_change_this"
 ALGORITHM = "HS256"
@@ -647,3 +714,127 @@ def get_maintenance_by_vehicle(vehicle_id: int, db: Session = Depends(get_db)):
     Get maintenance records for a specific vehicle.
     """
     return db.query(Maintenance).filter(Maintenance.vehicle_id == vehicle_id).all()
+
+# Fuel/Expense endpoints (for managing fuel and expense records)
+@app.get("/fuel-expenses", response_model=List[FuelExpenseSchema])
+def get_fuel_expenses(db: Session = Depends(get_db)):
+    """
+    Get all fuel and expense records.
+    """
+    return db.query(FuelExpense).all()
+
+@app.post("/fuel-expenses", response_model=FuelExpenseSchema)
+def create_fuel_expense(expense: FuelExpenseCreate, db: Session = Depends(get_db)):
+    """
+    Create a new fuel or expense record.
+    """
+    db_expense = FuelExpense(
+        vehicle_id=expense.vehicle_id,
+        driver_id=expense.driver_id,
+        expense_type=expense.expense_type,
+        fuel_type=expense.fuel_type,
+        quantity=expense.quantity,
+        cost=expense.cost,
+        odometer_reading=expense.odometer_reading,
+        location=expense.location,
+        expense_date=expense.expense_date,
+        notes=expense.notes
+    )
+    db.add(db_expense)
+    db.commit()
+    db.refresh(db_expense)
+    return db_expense
+
+@app.put("/fuel-expenses/{expense_id}", response_model=FuelExpenseSchema)
+def update_fuel_expense(expense_id: int, expense: FuelExpenseUpdate, db: Session = Depends(get_db)):
+    """
+    Update an existing fuel or expense record.
+    """
+    db_expense = db.query(FuelExpense).filter(FuelExpense.id == expense_id).first()
+    if not db_expense:
+        raise HTTPException(status_code=404, detail="Expense record not found")
+
+    db_expense.vehicle_id = expense.vehicle_id
+    db_expense.driver_id = expense.driver_id
+    db_expense.expense_type = expense.expense_type
+    db_expense.fuel_type = expense.fuel_type
+    db_expense.quantity = expense.quantity
+    db_expense.cost = expense.cost
+    db_expense.odometer_reading = expense.odometer_reading
+    db_expense.location = expense.location
+    db_expense.expense_date = expense.expense_date
+    db_expense.notes = expense.notes
+
+    db.commit()
+    db.refresh(db_expense)
+    return db_expense
+
+@app.delete("/fuel-expenses/{expense_id}")
+def delete_fuel_expense(expense_id: int, db: Session = Depends(get_db)):
+    """
+    Delete a fuel or expense record.
+    """
+    db_expense = db.query(FuelExpense).filter(FuelExpense.id == expense_id).first()
+    if not db_expense:
+        raise HTTPException(status_code=404, detail="Expense record not found")
+    db.delete(db_expense)
+    db.commit()
+    return {"detail": "Expense record deleted"}
+
+@app.get("/fuel-expenses/vehicle/{vehicle_id}", response_model=List[FuelExpenseSchema])
+def get_fuel_expenses_by_vehicle(vehicle_id: int, db: Session = Depends(get_db)):
+    """
+    Get fuel and expense records for a specific vehicle.
+    """
+    return db.query(FuelExpense).filter(FuelExpense.vehicle_id == vehicle_id).all()
+
+@app.get("/fuel-expenses/stats/vehicle/{vehicle_id}", response_model=FuelExpenseStats)
+def get_fuel_expense_stats_by_vehicle(vehicle_id: int, db: Session = Depends(get_db)):
+    """
+    Get fuel and expense statistics for a specific vehicle.
+    """
+    # Get total fuel costs
+    total_fuel_costs = db.query(func.coalesce(func.sum(FuelExpense.cost), 0)).filter(
+        FuelExpense.vehicle_id == vehicle_id,
+        FuelExpense.expense_type == 'fuel'
+    ).scalar() or 0.0
+
+    # Get total other expenses
+    total_other_expenses = db.query(func.coalesce(func.sum(FuelExpense.cost), 0)).filter(
+        FuelExpense.vehicle_id == vehicle_id,
+        FuelExpense.expense_type != 'fuel'
+    ).scalar() or 0.0
+
+    # Calculate fuel efficiency (km/l) - requires odometer readings and fuel quantities
+    fuel_records = db.query(FuelExpense).filter(
+        FuelExpense.vehicle_id == vehicle_id,
+        FuelExpense.expense_type == 'fuel',
+        FuelExpense.quantity.isnot(None),
+        FuelExpense.odometer_reading.isnot(None)
+    ).order_by(FuelExpense.expense_date).all()
+
+    fuel_efficiency = None
+    if len(fuel_records) >= 2:
+        # Calculate total distance and total fuel
+        total_distance = 0
+        total_fuel = 0
+        prev_odometer = None
+
+        for record in fuel_records:
+            if prev_odometer is not None:
+                distance = record.odometer_reading - prev_odometer
+                total_distance += distance
+                total_fuel += record.quantity
+            prev_odometer = record.odometer_reading
+
+        if total_fuel > 0:
+            fuel_efficiency = total_distance / total_fuel
+
+    
+
+    return FuelExpenseStats(
+        total_fuel_costs=total_fuel_costs,
+        total_other_expenses=total_other_expenses,
+        fuel_efficiency=fuel_efficiency,
+        
+    )

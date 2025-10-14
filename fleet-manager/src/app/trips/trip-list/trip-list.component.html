@@ -1,6 +1,15 @@
 <div class="trip-list">
-  <h2>Trips</h2>
-  <a routerLink="/trips/form">Add New Trip</a>
+  <div class="list-header">
+    <button routerLink="/dashboard" class="back-btn">
+      <span class="btn-icon">⬅️</span>
+      Back to Dashboard
+    </button>
+    <h2>Trips</h2>
+    <a routerLink="/trips/form" class="add-btn">
+      <span class="btn-icon">➕</span>
+      Add New Trip
+    </a>
+  </div>
   <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
   <ul>
     @for (trip of trips; track trip.id) {

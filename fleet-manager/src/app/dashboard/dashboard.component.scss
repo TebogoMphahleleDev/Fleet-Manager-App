@@ -87,6 +87,42 @@
   line-height: 1.4;
 }
 
+/* Charts Grid */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+  margin-bottom: 80px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
+}
+
+.chart-card {
+  background: white;
+  padding: 28px 24px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.chart-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #4299e1;
+}
+
+.chart-card canvas {
+  flex: 1;
+  max-height: 280px;
+}
+
 /* Loading State */
 .loading {
   text-align: center;

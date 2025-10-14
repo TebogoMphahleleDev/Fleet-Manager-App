@@ -43,10 +43,31 @@
       <div class="stat-icon">💰</div>
       <div class="stat-content">
         <h3>R{{ stats.maintenance_costs.toFixed(2) }}</h3>
-        <p>Maintenance Costs (12 Months)</p>
+        <p>Maintenance & Fuel Costs (12 Months)</p>
       </div>
     </div>
   </div>
+
+  <!-- Charts Section -->
+  @if (monthlyTrips.length > 0 || maintenanceCosts.length > 0) {
+  <div class="charts-grid">
+    <div class="chart-card">
+      <canvas baseChart
+              [data]="tripsChartData"
+              [options]="tripsChartOptions"
+              type="line">
+      </canvas>
+    </div>
+
+    <div class="chart-card">
+      <canvas baseChart
+              [data]="maintenanceChartData"
+              [options]="maintenanceChartOptions"
+              type="line">
+      </canvas>
+    </div>
+  </div>
+  }
   }
 
   <!-- Loading State -->
@@ -81,6 +102,12 @@
       <h3>Manage Maintenance</h3>
       <p>Track maintenance and repairs</p>
     </a>
+
+    <a routerLink="/fuel-expenses" class="dashboard-card">
+      <div class="card-icon">⛽</div>
+      <h3>Fuel Expenses</h3>
+      <p>Track fuel and other vehicle expenses</p>
+    </a>
   </div>
 
   <button (click)="logout()" class="logout-btn">
@@ -88,3 +115,4 @@
     Logout
   </button>
 </div>
+s

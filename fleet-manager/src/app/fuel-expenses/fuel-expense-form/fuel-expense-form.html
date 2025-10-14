@@ -1,0 +1,112 @@
+<div class="fuel-expense-form">
+  <div class="form-header">
+    <h2>{{ isEditMode ? 'Edit Fuel Expense' : 'Add New Fuel Expense' }}</h2>
+    <button (click)="onCancel()" class="back-btn">
+      <span class="btn-icon">⬅️</span>
+      Back to List
+    </button>
+  </div>
+
+  <form [formGroup]="fuelExpenseForm" (ngSubmit)="onSubmit()" class="expense-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="expense_type">Expense Type *</label>
+        <select id="expense_type" formControlName="expense_type" class="form-control">
+          <option value="">Select Expense Type</option>
+          <option value="fuel">Fuel</option>
+          <option value="maintenance">Maintenance</option>
+          <option value="insurance">Insurance</option>
+          <option value="toll">Toll</option>
+          <option value="parking">Parking</option>
+          <option value="other">Other</option>
+        </select>
+        @if (fuelExpenseForm.get('expense_type')?.invalid && fuelExpenseForm.get('expense_type')?.touched) {
+          <div class="error-message">Expense type is required</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="expense_date">Expense Date *</label>
+        <input type="date" id="expense_date" formControlName="expense_date" class="form-control">
+        @if (fuelExpenseForm.get('expense_date')?.invalid && fuelExpenseForm.get('expense_date')?.touched) {
+          <div class="error-message">Expense date is required</div>
+        }
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="cost">Cost (R) *</label>
+        <input type="number" id="cost" formControlName="cost" class="form-control" step="0.01" min="0">
+        @if (fuelExpenseForm.get('cost')?.invalid && fuelExpenseForm.get('cost')?.touched) {
+          <div class="error-message">
+            @if (fuelExpenseForm.get('cost')?.errors?.['required']) {
+              Cost is required
+            } @else if (fuelExpenseForm.get('cost')?.errors?.['min']) {
+              Cost must be positive
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="fuel_type">Fuel Type</label>
+        <select id="fuel_type" formControlName="fuel_type" class="form-control">
+          <option value="">Select Fuel Type</option>
+          <option value="petrol">Petrol</option>
+          <option value="diesel">Diesel</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="quantity">Quantity (Liters)</label>
+        <input type="number" id="quantity" formControlName="quantity" class="form-control" step="0.01" min="0">
+        @if (fuelExpenseForm.get('quantity')?.invalid && fuelExpenseForm.get('quantity')?.touched) {
+          <div class="error-message">Quantity must be positive</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" id="location" formControlName="location" class="form-control" placeholder="Enter location">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="vehicle_id">Vehicle</label>
+        <select id="vehicle_id" formControlName="vehicle_id" class="form-control">
+          <option value="">Select Vehicle</option>
+          @for (vehicle of vehicles; track vehicle.id) {
+            <option [value]="vehicle.id">{{ vehicle.name }} - {{ vehicle.registrationNumber }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="driver_id">Driver</label>
+        <select id="driver_id" formControlName="driver_id" class="form-control">
+          <option value="">Select Driver</option>
+          @for (driver of drivers; track driver.id) {
+            <option [value]="driver.id">{{ driver.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" (click)="onCancel()" class="cancel-btn">Cancel</button>
+      <button type="submit" [disabled]="loading || fuelExpenseForm.invalid" class="submit-btn">
+        @if (loading) {
+          <span class="loading-icon">⏳</span>
+          Saving...
+        } @else {
+          <span class="btn-icon">{{ isEditMode ? '💾' : '➕' }}</span>
+          {{ isEditMode ? 'Update' : 'Create' }} Expense
+        }
+      </button>
+    </div>
+  </form>
+</div>

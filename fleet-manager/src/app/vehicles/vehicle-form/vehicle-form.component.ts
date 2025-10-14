@@ -19,6 +19,7 @@ import { CommonModule } from '@angular/common';
 export class VehicleFormComponent implements OnInit {
   vehicleForm: FormGroup;
   vehicleId: string | null = null;
+  loading = false;
 
   /**
    * Constructor for VehicleFormComponent.
@@ -82,6 +83,7 @@ export class VehicleFormComponent implements OnInit {
     if (this.vehicleForm.invalid) {
       return;
     }
+    this.loading = true;
     const vehicleData = this.vehicleForm.value;
     if (this.vehicleId) {
       this.vehicleService.updateVehicle(this.vehicleId, vehicleData).subscribe({
@@ -89,7 +91,10 @@ export class VehicleFormComponent implements OnInit {
           this.popupService.showSuccess('Vehicle updated successfully');
           this.router.navigate(['/vehicles']);
         },
-        error: () => this.popupService.showError('Failed to update vehicle')
+        error: () => {
+          this.popupService.showError('Failed to update vehicle');
+          this.loading = false;
+        }
       });
     } else {
       this.vehicleService.addVehicle(vehicleData).subscribe({
@@ -97,8 +102,18 @@ export class VehicleFormComponent implements OnInit {
           this.popupService.showSuccess('Vehicle added successfully');
           this.router.navigate(['/vehicles']);
         },
-        error: () => this.popupService.showError('Failed to add vehicle')
+        error: () => {
+          this.popupService.showError('Failed to add vehicle');
+          this.loading = false;
+        }
       });
     }
+  }
+
+  /**
+   * Handles cancel action to navigate back to vehicle list.
+   */
+  onCancel(): void {
+    this.router.navigate(['/vehicles']);
   }
 }

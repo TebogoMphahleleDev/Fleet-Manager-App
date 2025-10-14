@@ -17,6 +17,9 @@ export const routes: Routes = [
   { path: 'maintenance', loadComponent: () => import('./maintenance/maintenance-list/maintenance-list.component').then(m => m.MaintenanceListComponent), canActivate: [AuthGuard] },
   { path: 'maintenance/form', loadComponent: () => import('./maintenance/maintenance-form/maintenance-form.component').then(m => m.MaintenanceFormComponent), canActivate: [AuthGuard] },
   { path: 'maintenance/form/:id', loadComponent: () => import('./maintenance/maintenance-form/maintenance-form.component').then(m => m.MaintenanceFormComponent), canActivate: [AuthGuard] },
+  { path: 'fuel-expenses', loadComponent: () => import('./fuel-expenses/fuel-expense-list/fuel-expense-list').then(m => m.FuelExpenseList), canActivate: [AuthGuard] },
+  { path: 'fuel-expenses/form', loadComponent: () => import('./fuel-expenses/fuel-expense-form/fuel-expense-form').then(m => m.FuelExpenseForm), canActivate: [AuthGuard] },
+  { path: 'fuel-expenses/form/:id', loadComponent: () => import('./fuel-expenses/fuel-expense-form/fuel-expense-form').then(m => m.FuelExpenseForm), canActivate: [AuthGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/dashboard' }
 ];

@@ -1,42 +1,88 @@
 <div class="vehicle-form">
-  <h2>{{ vehicleId ? 'Edit Vehicle' : 'Add Vehicle' }}</h2>
-  <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()">
-    <div>
-      <label for="name">Name:</label>
-      <input id="name" formControlName="name" />
-      <div *ngIf="vehicleForm.get('name')?.invalid && vehicleForm.get('name')?.touched" class="error">
-        Name is required.
+  <div class="form-header">
+    <h2>{{ vehicleId ? 'Edit Vehicle' : 'Add New Vehicle' }}</h2>
+    <button (click)="onCancel()" class="back-btn">
+      <span class="btn-icon">⬅️</span>
+      Back to List
+    </button>
+  </div>
+
+  <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()" class="vehicle-form-content">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="name">Vehicle Name *</label>
+        <input id="name" formControlName="name" class="form-control" placeholder="Enter vehicle name" />
+        @if (vehicleForm.get('name')?.invalid && vehicleForm.get('name')?.touched) {
+          <div class="error-message">Vehicle name is required</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="model">Model</label>
+        <input id="model" formControlName="model" class="form-control" placeholder="Enter model" />
       </div>
     </div>
-    <div>
-      <label for="model">Model:</label>
-      <input id="model" formControlName="model" />
-    </div>
-    <div>
-      <label for="make">Make:</label>
-      <input id="make" formControlName="make" />
-    </div>
-    <div>
-      <label for="color">Color:</label>
-      <input id="color" formControlName="color" />
-    </div>
-    <div>
-      <label for="registrationNumber">Registration Number:</label>
-      <input id="registrationNumber" formControlName="registrationNumber" />
-    </div>
-    <div>
-      <label for="licenseExpiryDate">License Expiry Date:</label>
-      <input id="licenseExpiryDate" type="date" formControlName="licenseExpiryDate" />
-    </div>
-    <div>
-      <label for="yearOfCar">Year of Car:</label>
-      <input id="yearOfCar" type="number" formControlName="yearOfCar" />
-      <div *ngIf="vehicleForm.get('yearOfCar')?.invalid && vehicleForm.get('yearOfCar')?.touched" class="error">
-        <span *ngIf="vehicleForm.get('yearOfCar')?.errors?.['required']">Year is required.</span>
-        <span *ngIf="vehicleForm.get('yearOfCar')?.errors?.['min']">Year must be at least 1900.</span>
-        <span *ngIf="vehicleForm.get('yearOfCar')?.errors?.['max']">Year must be at most 2024.</span>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="make">Make</label>
+        <input id="make" formControlName="make" class="form-control" placeholder="Enter make" />
+      </div>
+
+      <div class="form-group">
+        <label for="color">Color</label>
+        <input id="color" formControlName="color" class="form-control" placeholder="Enter color" />
       </div>
     </div>
-    <button type="submit" [disabled]="vehicleForm.invalid">{{ vehicleId ? 'Update' : 'Add' }}</button>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="registrationNumber">Registration Number *</label>
+        <input id="registrationNumber" formControlName="registrationNumber" class="form-control" placeholder="Enter registration number" />
+        @if (vehicleForm.get('registrationNumber')?.invalid && vehicleForm.get('registrationNumber')?.touched) {
+          <div class="error-message">Registration number is required</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="yearOfCar">Year of Car *</label>
+        <input id="yearOfCar" type="number" formControlName="yearOfCar" class="form-control" placeholder="Enter year" min="1900" max="2025" />
+        @if (vehicleForm.get('yearOfCar')?.invalid && vehicleForm.get('yearOfCar')?.touched) {
+          <div class="error-message">
+            @if (vehicleForm.get('yearOfCar')?.errors?.['required']) {
+              Year is required
+            } @else if (vehicleForm.get('yearOfCar')?.errors?.['min']) {
+              Year must be at least 1900
+            } @else if (vehicleForm.get('yearOfCar')?.errors?.['max']) {
+              Year must be at most 2025
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="licenseExpiryDate">License Expiry Date</label>
+        <input id="licenseExpiryDate" type="date" formControlName="licenseExpiryDate" class="form-control" />
+      </div>
+
+      <div class="form-group">
+        <!-- Empty for spacing -->
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" (click)="onCancel()" class="cancel-btn">Cancel</button>
+      <button type="submit" [disabled]="loading || vehicleForm.invalid" class="submit-btn">
+        @if (loading) {
+          <span class="loading-icon">⏳</span>
+          Saving...
+        } @else {
+          <span class="btn-icon">{{ vehicleId ? '💾' : '🚗' }}</span>
+          {{ vehicleId ? 'Update' : 'Add' }} Vehicle
+        }
+      </button>
+    </div>
   </form>
 </div>

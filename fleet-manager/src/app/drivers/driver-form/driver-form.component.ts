@@ -21,6 +21,7 @@ export class DriverFormComponent implements OnInit {
   driverForm: FormGroup;
   driverId: string | null = null;
   vehicles: Vehicle[] = [];
+  loading = false;
 
   /**
    * Constructor for DriverFormComponent.
@@ -94,6 +95,7 @@ export class DriverFormComponent implements OnInit {
     if (this.driverForm.invalid) {
       return;
     }
+    this.loading = true;
     const driverData = this.driverForm.value;
     if (this.driverId) {
       this.driverService.updateDriver(this.driverId, driverData).subscribe({
@@ -101,7 +103,10 @@ export class DriverFormComponent implements OnInit {
           this.popupService.showSuccess('Driver updated successfully');
           this.router.navigate(['/drivers']);
         },
-        error: () => this.popupService.showError('Failed to update driver')
+        error: () => {
+          this.popupService.showError('Failed to update driver');
+          this.loading = false;
+        }
       });
     } else {
       this.driverService.addDriver(driverData).subscribe({
@@ -109,8 +114,18 @@ export class DriverFormComponent implements OnInit {
           this.popupService.showSuccess('Driver added successfully');
           this.router.navigate(['/drivers']);
         },
-        error: () => this.popupService.showError('Failed to add driver')
+        error: () => {
+          this.popupService.showError('Failed to add driver');
+          this.loading = false;
+        }
       });
     }
+  }
+
+  /**
+   * Handles cancel action to navigate back to driver list.
+   */
+  onCancel(): void {
+    this.router.navigate(['/drivers']);
   }
 }
