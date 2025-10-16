@@ -1,8 +1,12 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../services/auth.service';
 import { PopupService } from '../services/popup.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DashboardService, DashboardStats, DashboardSummary, MonthlyTripData, MaintenanceCostData } from '../services/dashboard.service';
 import { ChartConfiguration, ChartOptions, ChartType, Chart as ChartJS } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
@@ -18,7 +22,7 @@ ChartJS.register(LineController, LineElement, PointElement, LinearScale, Title, 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, BaseChartDirective],
+  imports: [CommonModule, RouterLink, BaseChartDirective, MatCardModule, MatIconModule, MatButtonModule,MatProgressSpinnerModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })

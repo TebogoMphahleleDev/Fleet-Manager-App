@@ -7,13 +7,20 @@
   box-sizing: border-box;
 }
 
-.dashboard-header {
+.dashboard-header-card {
+  max-width: 600px;
+  margin: 0 auto 60px;
   text-align: center;
-  margin-bottom: 60px;
-  padding: 0 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.dashboard-header h1 {
+.dashboard-header-content {
+  padding: 32px;
+}
+
+.dashboard-title {
   font-size: 2.5rem;
   font-weight: 700;
   color: #1a202c;
@@ -21,11 +28,10 @@
   line-height: 1.2;
 }
 
-.dashboard-header p {
+.dashboard-subtitle {
   font-size: 1.1rem;
   color: #718096;
   font-weight: 400;
-  margin: 0;
 }
 
 /* Statistics Grid */
@@ -65,6 +71,7 @@
   flex-shrink: 0;
   width: 60px;
   text-align: center;
+  color: #4299e1;
 }
 
 .stat-content {
@@ -124,13 +131,22 @@
 }
 
 /* Loading State */
-.loading {
-  text-align: center;
+.loading-card {
+  max-width: 400px;
   margin: 60px auto;
+  text-align: center;
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.loading-content {
   color: #718096;
   font-size: 1.1rem;
-  max-width: 1000px;
-  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
 
 /* Management Links */
@@ -161,6 +177,7 @@
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
+  cursor: pointer;
 }
 
 .dashboard-card:hover {
@@ -173,6 +190,7 @@
   font-size: 3rem;
   margin-bottom: 20px;
   display: block;
+  color: #4299e1;
 }
 
 .dashboard-card h3 {
@@ -191,33 +209,23 @@
   max-width: 200px;
 }
 
-.logout-btn {
+.logout-actions {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin: 0 auto;
-  padding: 16px 40px;
-  background: #e53e3e;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(229, 62, 62, 0.2);
-  min-width: 160px;
+  margin-top: 40px;
 }
 
-.logout-btn:hover {
-  background: #c53030;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3);
+.logout-btn {
+  font-size: 1.1rem;
+  font-weight: 600;
+  min-width: 160px;
+  padding: 12px 24px;
+  border-radius: 8px;
 }
 
 .logout-icon {
   font-size: 1.2rem;
+  margin-right: 8px;
 }
 
 /* Responsive design */
@@ -226,12 +234,11 @@
     padding: 24px 16px;
   }
 
-  .dashboard-header {
+  .dashboard-header-card {
     margin-bottom: 40px;
-    padding: 0;
   }
 
-  .dashboard-header h1 {
+  .dashboard-title {
     font-size: 2rem;
   }
 
@@ -284,7 +291,7 @@
     padding: 20px 12px;
   }
 
-  .dashboard-header h1 {
+  .dashboard-title {
     font-size: 1.75rem;
   }
 

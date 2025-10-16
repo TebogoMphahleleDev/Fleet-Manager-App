@@ -2,6 +2,9 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { DriverService, Driver } from '../../services/driver.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 /**
  * Component for displaying a list of drivers.
@@ -11,7 +14,7 @@ import { RouterLink } from '@angular/router';
   selector: 'app-driver-list',
   templateUrl: './driver-list.component.html',
   styleUrls: ['./driver-list.component.scss'],
-   imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, MatCardModule, MatButtonModule, MatIconModule],
   standalone: true
 })
 export class DriverListComponent implements OnInit {

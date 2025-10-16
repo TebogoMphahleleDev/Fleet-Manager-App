@@ -5,6 +5,13 @@ import { VehicleService, Vehicle } from '../../services/vehicle.service';
 import { PopupService } from '../../services/popup.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 /**
  * Component for adding or editing a driver.
@@ -13,7 +20,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-driver-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './driver-form.component.html',
   styleUrls: ['./driver-form.component.scss']
 })

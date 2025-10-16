@@ -2,6 +2,9 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FuelExpenseService, FuelExpense } from '../../services/fuel-expense.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 /**
  * Component for displaying a list of fuel expenses.
@@ -11,7 +14,7 @@ import { RouterModule } from '@angular/router';
   selector: 'app-fuel-expense-list',
   templateUrl: './fuel-expense-list.html',
   styleUrls: ['./fuel-expense-list.scss'],
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MatCardModule, MatButtonModule, MatIconModule],
   standalone: true
 })
 export class FuelExpenseList implements OnInit {

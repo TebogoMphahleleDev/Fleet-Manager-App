@@ -6,6 +6,13 @@ import { FuelExpenseService, FuelExpense } from '../../services/fuel-expense.ser
 import { VehicleService, Vehicle } from '../../services/vehicle.service';
 import { DriverService, Driver } from '../../services/driver.service';
 import { PopupService } from '../../services/popup.service';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 /**
  * Component for creating and editing fuel expenses.
@@ -15,7 +22,7 @@ import { PopupService } from '../../services/popup.service';
   selector: 'app-fuel-expense-form',
   templateUrl: './fuel-expense-form.html',
   styleUrls: ['./fuel-expense-form.scss'],
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   standalone: true
 })
 export class FuelExpenseForm implements OnInit {
