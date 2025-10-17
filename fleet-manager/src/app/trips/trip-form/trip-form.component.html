@@ -1,54 +1,140 @@
-<div class="trip-form">
-  <h2>{{ tripId ? 'Edit Trip' : 'Add Trip' }}</h2>
-  <form [formGroup]="tripForm" (ngSubmit)="onSubmit()">
-    <div>
-      <label for="driver_id">Driver:</label>
-      <select id="driver_id" formControlName="driver_id">
-        <option value="">Select Driver</option>
-        <option *ngFor="let driver of drivers" [value]="driver.id">{{ driver.name }}</option>
-      </select>
-      <div *ngIf="tripForm.get('driver_id')?.invalid && tripForm.get('driver_id')?.touched" class="error">
-        Driver is required.
+<mat-card class="trip-form">
+  <mat-card-header class="form-header">
+    <mat-card-title>{{ tripId ? 'Edit Trip' : 'Add Trip' }}</mat-card-title>
+    <mat-card-actions>
+      <button mat-stroked-button (click)="onCancel()" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+        Back to List
+      </button>
+    </mat-card-actions>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="tripForm" (ngSubmit)="onSubmit()" class="trip-form-content">
+      <div class="form-row">
+        <mat-form-field class="form-group" appearance="outline">
+          <mat-label>Driver *</mat-label>
+          <mat-select id="driver_id" formControlName="driver_id">
+            <mat-option value="">Select Driver</mat-option>
+            <mat-option *ngFor="let driver of drivers" [value]="driver.id">
+              {{ driver.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="tripForm.get('driver_id')?.invalid && tripForm.get('driver_id')?.touched">
+            Driver is required.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-group" appearance="outline">
+          <mat-label>Vehicle *</mat-label>
+          <mat-select id="vehicle_id" formControlName="vehicle_id">
+            <mat-option value="">Select Vehicle</mat-option>
+            <mat-option *ngFor="let vehicle of vehicles" [value]="vehicle.id">
+              {{ vehicle.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="tripForm.get('vehicle_id')?.invalid && tripForm.get('vehicle_id')?.touched">
+            Vehicle is required.
+          </mat-error>
+        </mat-form-field>
       </div>
-    </div>
-    <div>
-      <label for="vehicle_id">Vehicle:</label>
-      <select id="vehicle_id" formControlName="vehicle_id">
-        <option value="">Select Vehicle</option>
-        <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">{{ vehicle.name }}</option>
-      </select>
-      <div *ngIf="tripForm.get('vehicle_id')?.invalid && tripForm.get('vehicle_id')?.touched" class="error">
-        Vehicle is required.
+
+      <div class="form-row">
+        <mat-form-field class="form-group" appearance="outline">
+          <mat-label>Start Location *</mat-label>
+          <input matInput id="start_location" formControlName="start_location" placeholder="Enter start location" />
+          <mat-error *ngIf="tripForm.get('start_location')?.invalid && tripForm.get('start_location')?.touched">
+            Start location is required.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-group" appearance="outline">
+          <mat-label>End Location *</mat-label>
+          <input matInput id="end_location" formControlName="end_location" placeholder="Enter end location" />
+          <mat-error *ngIf="tripForm.get('end_location')?.invalid && tripForm.get('end_location')?.touched">
+            End location is required.
+          </mat-error>
+        </mat-form-field>
       </div>
-    </div>
-    <div>
-      <label for="start_location">Start Location:</label>
-      <input id="start_location" formControlName="start_location" />
-      <div *ngIf="tripForm.get('start_location')?.invalid && tripForm.get('start_location')?.touched" class="error">
-        Start location is required.
+
+      <div class="form-row">
+        <div class="datetime-group">
+          <mat-form-field class="form-group date-field" appearance="outline">
+            <mat-label>Start Date *</mat-label>
+            <input matInput [matDatepicker]="startPicker" formControlName="start_date" />
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+            <mat-error *ngIf="tripForm.get('start_date')?.invalid && tripForm.get('start_date')?.touched">
+              Start date is required.
+            </mat-error>
+          </mat-form-field>
+          <div class="time-group">
+            <mat-form-field class="form-group time-field" appearance="outline">
+              <mat-label>Start Hour</mat-label>
+              <mat-select formControlName="start_hour">
+                <mat-option *ngFor="let hour of hours" [value]="hour">{{ hour }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="form-group time-field" appearance="outline">
+              <mat-label>Start Minute</mat-label>
+              <mat-select formControlName="start_minute">
+                <mat-option *ngFor="let minute of minutes" [value]="minute">{{ minute }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="datetime-group">
+          <mat-form-field class="form-group date-field" appearance="outline">
+            <mat-label>End Date *</mat-label>
+            <input matInput [matDatepicker]="endPicker" formControlName="end_date" />
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+            <mat-error *ngIf="tripForm.get('end_date')?.invalid && tripForm.get('end_date')?.touched">
+              End date is required.
+            </mat-error>
+          </mat-form-field>
+          <div class="time-group">
+            <mat-form-field class="form-group time-field" appearance="outline">
+              <mat-label>End Hour</mat-label>
+              <mat-select formControlName="end_hour">
+                <mat-option *ngFor="let hour of hours" [value]="hour">{{ hour }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="form-group time-field" appearance="outline">
+              <mat-label>End Minute</mat-label>
+              <mat-select formControlName="end_minute">
+                <mat-option *ngFor="let minute of minutes" [value]="minute">{{ minute }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
       </div>
-    </div>
-    <div>
-      <label for="end_location">End Location:</label>
-      <input id="end_location" formControlName="end_location" />
-      <div *ngIf="tripForm.get('end_location')?.invalid && tripForm.get('end_location')?.touched" class="error">
-        End location is required.
+
+      <div class="form-row">
+        <mat-form-field class="form-group" appearance="outline">
+          <mat-label>Trip Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="planned">Planned</mat-option>
+            <mat-option value="in_progress">In Progress</mat-option>
+            <mat-option value="completed">Completed</mat-option>
+            <mat-option value="cancelled">Cancelled</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="form-group toggle-group">
+          <mat-label>Round Trip</mat-label>
+          <mat-slide-toggle formControlName="is_round_trip">Round Trip</mat-slide-toggle>
+        </div>
       </div>
-    </div>
-    <div>
-      <label for="start_time">Start Time:</label>
-      <input id="start_time" type="datetime-local" formControlName="start_time" />
-      <div *ngIf="tripForm.get('start_time')?.invalid && tripForm.get('start_time')?.touched" class="error">
-        Start time is required.
+
+      <div class="form-actions">
+        <button mat-stroked-button type="button" (click)="onCancel()" class="cancel-btn">Cancel</button>
+        <button mat-raised-button type="submit" [disabled]="tripForm.invalid" class="submit-btn" color="primary">
+          <mat-icon>{{ tripId ? 'save' : 'add' }}</mat-icon>
+          {{ tripId ? 'Update' : 'Add' }} Trip
+        </button>
       </div>
-    </div>
-    <div>
-      <label for="end_time">End Time:</label>
-      <input id="end_time" type="datetime-local" formControlName="end_time" />
-      <div *ngIf="tripForm.get('end_time')?.invalid && tripForm.get('end_time')?.touched" class="error">
-        End time is required.
-      </div>
-    </div>
-    <button type="submit" [disabled]="tripForm.invalid">{{ tripId ? 'Update' : 'Add' }}</button>
-  </form>
-</div>
+    </form>
+  </mat-card-content>
+</mat-card>

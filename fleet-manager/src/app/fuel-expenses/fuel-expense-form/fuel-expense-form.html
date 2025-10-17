@@ -30,7 +30,9 @@
 
         <mat-form-field class="form-group" appearance="outline">
           <mat-label>Expense Date *</mat-label>
-          <input matInput type="date" id="expense_date" formControlName="expense_date">
+          <input matInput [matDatepicker]="datePicker" formControlName="expense_date" />
+          <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+          <mat-datepicker #datePicker></mat-datepicker>
           <mat-error *ngIf="fuelExpenseForm.get('expense_date')?.invalid && fuelExpenseForm.get('expense_date')?.touched">
             Expense date is required
           </mat-error>
@@ -70,6 +72,29 @@
           <mat-label>Location</mat-label>
           <input matInput type="text" id="location" formControlName="location" placeholder="Enter location">
         </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <div class="time-group">
+          <mat-form-field class="form-group time-field" appearance="outline">
+            <mat-label>Hour</mat-label>
+            <mat-select formControlName="hour">
+              <mat-option *ngFor="let hour of hours" [value]="hour">{{ hour }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="form-group time-field" appearance="outline">
+            <mat-label>Minute</mat-label>
+            <mat-select formControlName="minute">
+              <mat-option *ngFor="let minute of minutes" [value]="minute">{{ minute }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-group toggle-group">
+          <mat-label>Recurring Expense</mat-label>
+          <mat-slide-toggle formControlName="is_recurring">Recurring</mat-slide-toggle>
+        </div>
       </div>
 
       <div class="form-row">

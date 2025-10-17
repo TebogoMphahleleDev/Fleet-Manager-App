@@ -1,88 +1,84 @@
-<div class="vehicle-form">
-  <div class="form-header">
-    <h2>{{ vehicleId ? 'Edit Vehicle' : 'Add New Vehicle' }}</h2>
-    <button (click)="onCancel()" class="back-btn">
-      <span class="btn-icon">⬅️</span>
-      Back to List
-    </button>
-  </div>
-
-  <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()" class="vehicle-form-content">
-    <div class="form-row">
-      <div class="form-group">
-        <label for="name">Vehicle Name *</label>
-        <input id="name" formControlName="name" class="form-control" placeholder="Enter vehicle name" />
-        @if (vehicleForm.get('name')?.invalid && vehicleForm.get('name')?.touched) {
-          <div class="error-message">Vehicle name is required</div>
-        }
-      </div>
-
-      <div class="form-group">
-        <label for="model">Model</label>
-        <input id="model" formControlName="model" class="form-control" placeholder="Enter model" />
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label for="make">Make</label>
-        <input id="make" formControlName="make" class="form-control" placeholder="Enter make" />
-      </div>
-
-      <div class="form-group">
-        <label for="color">Color</label>
-        <input id="color" formControlName="color" class="form-control" placeholder="Enter color" />
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label for="registrationNumber">Registration Number *</label>
-        <input id="registrationNumber" formControlName="registrationNumber" class="form-control" placeholder="Enter registration number" />
-        @if (vehicleForm.get('registrationNumber')?.invalid && vehicleForm.get('registrationNumber')?.touched) {
-          <div class="error-message">Registration number is required</div>
-        }
-      </div>
-
-      <div class="form-group">
-        <label for="yearOfCar">Year of Car *</label>
-        <input id="yearOfCar" type="number" formControlName="yearOfCar" class="form-control" placeholder="Enter year" min="1900" max="2025" />
-        @if (vehicleForm.get('yearOfCar')?.invalid && vehicleForm.get('yearOfCar')?.touched) {
-          <div class="error-message">
-            @if (vehicleForm.get('yearOfCar')?.errors?.['required']) {
-              Year is required
-            } @else if (vehicleForm.get('yearOfCar')?.errors?.['min']) {
-              Year must be at least 1900
-            } @else if (vehicleForm.get('yearOfCar')?.errors?.['max']) {
-              Year must be at most 2025
-            }
-          </div>
-        }
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label for="licenseExpiryDate">License Expiry Date</label>
-        <input id="licenseExpiryDate" type="date" formControlName="licenseExpiryDate" class="form-control" />
-      </div>
-
-      <div class="form-group">
-        <!-- Empty for spacing -->
-      </div>
-    </div>
-
-    <div class="form-actions">
-      <button type="button" (click)="onCancel()" class="cancel-btn">Cancel</button>
-      <button type="submit" [disabled]="loading || vehicleForm.invalid" class="submit-btn">
-        @if (loading) {
-          <span class="loading-icon">⏳</span>
-          Saving...
-        } @else {
-          <span class="btn-icon">{{ vehicleId ? '💾' : '🚗' }}</span>
-          {{ vehicleId ? 'Update' : 'Add' }} Vehicle
-        }
+<mat-card class="vehicle-form">
+  <mat-card-header class="form-header">
+    <mat-card-title>{{ vehicleId ? 'Edit Vehicle' : 'Add New Vehicle' }}</mat-card-title>
+    <mat-card-actions>
+      <button mat-stroked-button (click)="onCancel()" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+        Back to List
       </button>
-    </div>
-  </form>
-</div>
+    </mat-card-actions>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()" class="vehicle-form-content">
+      <div class="form-row">
+        <mat-form-field class="form-group" appearance="outline">
+          <mat-label>Vehicle Name *</mat-label>
+          <input matInput id="name" formControlName="name" placeholder="Enter vehicle name" />
+          <mat-error *ngIf="vehicleForm.get('name')?.invalid && vehicleForm.get('name')?.touched">
+            Vehicle name is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-group" appearance="outline">
+          <mat-label>Model</mat-label>
+          <input matInput id="model" formControlName="model" placeholder="Enter model" />
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field class="form-group" appearance="outline">
+          <mat-label>Make</mat-label>
+          <input matInput id="make" formControlName="make" placeholder="Enter make" />
+        </mat-form-field>
+
+        <mat-form-field class="form-group" appearance="outline">
+          <mat-label>Color</mat-label>
+          <input matInput id="color" formControlName="color" placeholder="Enter color" />
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field class="form-group" appearance="outline">
+          <mat-label>Registration Number *</mat-label>
+          <input matInput id="registrationNumber" formControlName="registrationNumber" placeholder="Enter registration number" />
+          <mat-error *ngIf="vehicleForm.get('registrationNumber')?.invalid && vehicleForm.get('registrationNumber')?.touched">
+            Registration number is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-group" appearance="outline">
+          <mat-label>Year of Car *</mat-label>
+          <input matInput id="yearOfCar" type="number" formControlName="yearOfCar" placeholder="Enter year" min="1900" max="2025" />
+          <mat-error *ngIf="vehicleForm.get('yearOfCar')?.invalid && vehicleForm.get('yearOfCar')?.touched">
+            <span *ngIf="vehicleForm.get('yearOfCar')?.errors?.['required']">Year is required</span>
+            <span *ngIf="vehicleForm.get('yearOfCar')?.errors?.['min']">Year must be at least 1900</span>
+            <span *ngIf="vehicleForm.get('yearOfCar')?.errors?.['max']">Year must be at most 2025</span>
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field class="form-group" appearance="outline">
+          <mat-label>License Expiry Date</mat-label>
+          <input matInput [matDatepicker]="expiryPicker" formControlName="licenseExpiryDate" />
+          <mat-datepicker-toggle matSuffix [for]="expiryPicker"></mat-datepicker-toggle>
+          <mat-datepicker #expiryPicker></mat-datepicker>
+        </mat-form-field>
+
+        <div class="form-group">
+          <!-- Empty for spacing -->
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button mat-stroked-button type="button" (click)="onCancel()" class="cancel-btn">Cancel</button>
+        <button mat-raised-button type="submit" [disabled]="loading || vehicleForm.invalid" class="submit-btn" color="primary">
+          <mat-icon *ngIf="!loading">{{ vehicleId ? 'save' : 'directions_car' }}</mat-icon>
+          <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+          {{ loading ? 'Saving...' : (vehicleId ? 'Update' : 'Add') + ' Vehicle' }}
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

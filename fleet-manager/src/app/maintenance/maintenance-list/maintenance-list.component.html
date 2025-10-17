@@ -1,46 +1,70 @@
-<div class="maintenance-list">
-  <div class="list-header">
-    <button routerLink="/dashboard" class="back-btn">
-      <span class="btn-icon">⬅️</span>
-      Back to Dashboard
-    </button>
-    <h2>Maintenance Records</h2>
-    <a routerLink="/maintenance/form" class="add-btn">
-      <span class="btn-icon">➕</span>
-      Add Maintenance
-    </a>
-  </div>
+<mat-card class="maintenance-list">
+  <mat-card-header class="list-header">
+    <mat-card-title>Maintenance Records</mat-card-title>
+    <mat-card-actions>
+      <button mat-stroked-button routerLink="/dashboard" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Dashboard
+      </button>
+      <button mat-raised-button routerLink="/maintenance/form" class="add-btn" color="primary">
+        <mat-icon>add</mat-icon>
+        Add Maintenance
+      </button>
+    </mat-card-actions>
+  </mat-card-header>
 
-  @if (errorMessage) {
-  <p class="error">{{ errorMessage }}</p>
-  }
-
-  @if (maintenances.length > 0) {
-  <table>
-    <thead>
-      <tr>
-        <th>Description</th>
-        <th>Date</th>
-        <th>Cost</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (maintenance of maintenances; track maintenance.id) {
-        <tr>
-          <td>{{ maintenance.description }}</td>
-          <td>{{ maintenance.date }}</td>
-          <td>{{ maintenance.cost }}</td>
-          <td>
-            <button (click)="deleteMaintenance(maintenance.id)">Delete</button>
-          </td>
-        </tr>
+  <mat-card-content>
+    @if (loading) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading maintenance records...</p>
+      </div>
+    } @else {
+      @if (errorMessage) {
+        <mat-error class="error-message">{{ errorMessage }}</mat-error>
       }
-    </tbody>
-  </table>
-  }
 
-  @if (maintenances.length === 0) {
-  <p>No maintenance records found.</p>
-  }
-</div>
+      @if (maintenances.length > 0) {
+        <div class="maintenance-grid">
+          @for (maintenance of maintenances; track maintenance.id) {
+            <mat-card class="maintenance-card">
+              <mat-card-content>
+                <div class="maintenance-info">
+                  <div class="info-row">
+                    <mat-icon>build</mat-icon>
+                    <span class="label">Description:</span>
+                    <span>{{ maintenance.description }}</span>
+                  </div>
+                  <div class="info-row">
+                    <mat-icon>calendar_today</mat-icon>
+                    <span class="label">Date:</span>
+                    <span>{{ maintenance.date }}</span>
+                  </div>
+                  <div class="info-row">
+                    <mat-icon>attach_money</mat-icon>
+                    <span class="label">Cost:</span>
+                    <span>${{ maintenance.cost }}</span>
+                  </div>
+                </div>
+                <mat-card-actions class="card-actions">
+                  <button mat-stroked-button (click)="editMaintenance(maintenance.id); $event.stopPropagation()" color="primary">
+                    <mat-icon>edit</mat-icon>
+                    Edit
+                  </button>
+                  <button mat-stroked-button (click)="deleteMaintenance(maintenance.id); $event.stopPropagation()" color="warn">
+                    <mat-icon>delete</mat-icon>
+                    Delete
+                  </button>
+                </mat-card-actions>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      }
+
+      @if (maintenances.length === 0) {
+        <p class="no-records">No maintenance records found.</p>
+      }
+    }
+  </mat-card-content>
+</mat-card>

@@ -2,7 +2,9 @@ import { ChangeDetectorRef,Component, OnInit } from '@angular/core';
 import { TripService, Trip } from '../../services/trip.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { error } from 'node:console';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 /**
  * Component for displaying a list of trips.
@@ -12,7 +14,7 @@ import { error } from 'node:console';
   selector: 'app-trip-list',
   templateUrl: './trip-list.component.html',
   styleUrls: ['./trip-list.component.scss'],
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MatCardModule, MatButtonModule, MatIconModule],
   standalone: true
 })
 export class TripList implements OnInit {

@@ -1,44 +1,70 @@
-<div class="vehicle-list">
-  <div class="list-header">
-    <button routerLink="/dashboard" class="back-btn">
-      <span class="btn-icon">⬅️</span>
-      Back to Dashboard
-    </button>
-    <h2>Vehicles</h2>
-    <button routerLink="/vehicles/form" class="add-btn">
-      <span class="btn-icon">➕</span>
-      Add New Vehicle
-    </button>
-  </div>
+<mat-card class="vehicle-list">
+  <mat-card-header class="list-header">
+    <mat-card-title>Vehicles</mat-card-title>
+    <mat-card-actions>
+      <button mat-stroked-button routerLink="/dashboard" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Dashboard
+      </button>
+      <button mat-raised-button routerLink="/vehicles/form" class="add-btn" color="primary">
+        <mat-icon>add</mat-icon>
+        Add New Vehicle
+      </button>
+    </mat-card-actions>
+  </mat-card-header>
 
-  @if (errorMessage) {
-    <div class="error-message">
-      <span class="error-icon">⚠️</span>
-      {{ errorMessage }}
-    </div>
-  }
-
-  <div class="vehicles-container">
-    @for (vehicle of vehicles; track vehicle.id) {
-      <div class="vehicle-card">
-        <div class="vehicle-info">
-          <h3 class="vehicle-name">{{ vehicle.name }}</h3>
-        </div>
-        <div class="vehicle-actions">
-          <button routerLink="/vehicles/form/{{ vehicle.id }}" class="edit-btn">
-            <span class="btn-icon">✏️</span>
-            Edit
-          </button>
-          <button (click)="deleteVehicle(vehicle.id)" class="delete-btn">
-            <span class="btn-icon">🗑️</span>
-            Delete
-          </button>
-        </div>
-      </div>
-    } @empty {
-      <div class="empty-state">
-        <p>No vehicles found. Add your first vehicle to get started.</p>
-      </div>
+  <mat-card-content>
+    @if (errorMessage) {
+      <mat-card class="error-message">
+        <mat-card-content>
+          <mat-icon class="error-icon">warning</mat-icon>
+          {{ errorMessage }}
+        </mat-card-content>
+      </mat-card>
     }
-  </div>
-</div>
+
+    <div class="vehicles-container">
+      @for (vehicle of vehicles; track vehicle.id) {
+        <mat-card class="vehicle-card">
+          <mat-card-content>
+            <div class="vehicle-info">
+              <h3 class="vehicle-name">{{ vehicle.name }}</h3>
+              <p class="vehicle-details">
+                <span class="label">Model:</span> {{ vehicle.model || 'N/A' }} |
+                <span class="label">Make:</span> {{ vehicle.make || 'N/A' }} |
+                <span class="label">Color:</span> {{ vehicle.color || 'N/A' }}
+              </p>
+              <p class="vehicle-details">
+                <span class="label">Registration:</span> {{ vehicle.registrationNumber || 'N/A' }} |
+                <span class="label">Year:</span> {{ vehicle.yearOfCar || 'N/A' }}
+              </p>
+              @if (vehicle.licenseExpiryDate) {
+                <p class="vehicle-details">
+                  <span class="label">License Expiry:</span> {{ vehicle.licenseExpiryDate }}
+                </p>
+              }
+            </div>
+            <div class="vehicle-actions">
+              <button mat-stroked-button [routerLink]="['/vehicles/form', vehicle.id]" class="edit-btn">
+                <mat-icon>edit</mat-icon>
+                Edit
+              </button>
+              <button mat-stroked-button (click)="deleteVehicle(vehicle.id)" class="delete-btn" color="warn">
+                <mat-icon>delete</mat-icon>
+                Delete
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+
+    @if (vehicles.length === 0) {
+      <mat-card class="empty-state">
+        <mat-card-content>
+          <p>No vehicles found. Add your first vehicle to get started.</p>
+        </mat-card-content>
+      </mat-card>
+    }
+  </mat-card-content>
+</mat-card>

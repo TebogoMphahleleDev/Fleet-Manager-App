@@ -18,6 +18,8 @@ export interface FuelExpense {
   odometer_reading?: number;
   location?: string;
   expense_date: string;
+  time?: string;
+  is_recurring?: boolean;
   notes?: string;
 }
 
