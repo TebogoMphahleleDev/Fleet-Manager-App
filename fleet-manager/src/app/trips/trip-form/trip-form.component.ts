@@ -16,6 +16,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ConfirmDialogComponent } from '../../popup/confirm-dialog.component';
 
 /**
@@ -47,6 +48,7 @@ import { ConfirmDialogComponent } from '../../popup/confirm-dialog.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatSlideToggleModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './trip-form.component.html',
   styleUrls: ['./trip-form.component.scss'],
@@ -60,6 +62,7 @@ export class TripFormComponent implements OnInit {
   vehicles: Vehicle[] = [];
   hours: string[] = [];
   minutes: string[] = [];
+  loading: boolean = false;
 
   /**
    * Constructor - Dependency Injection
@@ -207,6 +210,7 @@ export class TripFormComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        this.loading = true;
         const formValue = this.tripForm.value;
 
         // Combine hour and minute into time strings
@@ -226,20 +230,28 @@ export class TripFormComponent implements OnInit {
         if (this.tripId) {
           this.tripService.updateTrip(this.tripId, tripData).subscribe({
             next: () => {
+              this.loading = false;
               this.popupService.showSuccess('Trip updated successfully');
               this.router.navigate(['/trips']);
             },
-            error: () => this.popupService.showError('Failed to update trip'),
+            error: () => {
+              this.loading = false;
+              this.popupService.showError('Failed to update trip');
+            },
           });
 
           // If tripId exists, update the trip
         } else {
           this.tripService.addTrip(tripData).subscribe({
             next: () => {
+              this.loading = false;
               this.popupService.showSuccess('Trip added successfully');
               this.router.navigate(['/trips']);
             },
-            error: () => this.popupService.showError('Failed to add trip'),
+            error: () => {
+              this.loading = false;
+              this.popupService.showError('Failed to add trip');
+            },
           });
         }
       }

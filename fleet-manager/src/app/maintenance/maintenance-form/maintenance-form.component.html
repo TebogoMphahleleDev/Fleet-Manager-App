@@ -1,86 +1,173 @@
-<mat-card class="maintenance-form">
-  <mat-card-header class="form-header">
-    <mat-card-title>{{ maintenanceId ? 'Edit Maintenance' : 'Add Maintenance' }}</mat-card-title>
-    <mat-card-actions>
-      <button mat-stroked-button (click)="onCancel()" class="back-btn">
-        <mat-icon>arrow_back</mat-icon>
-        Back to List
-      </button>
-    </mat-card-actions>
-  </mat-card-header>
-
-  <mat-card-content>
-    <form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()" class="maintenance-form-content">
-      <div class="form-row">
-        <mat-form-field class="form-group" appearance="outline">
-          <mat-label>Vehicle *</mat-label>
-          <mat-select id="vehicle_id" formControlName="vehicle_id">
-            <mat-option value="">Select Vehicle</mat-option>
-            <mat-option *ngFor="let vehicle of vehicles" [value]="vehicle.id">
-              {{ vehicle.name }}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="maintenanceForm.get('vehicle_id')?.invalid && maintenanceForm.get('vehicle_id')?.touched">
-            Vehicle is required.
-          </mat-error>
-        </mat-form-field>
-      </div>
-
-      <div class="form-row">
-        <mat-form-field class="form-group" appearance="outline">
-          <mat-label>Description *</mat-label>
-          <textarea matInput id="description" formControlName="description" rows="4" placeholder="Enter maintenance description"></textarea>
-          <mat-error *ngIf="maintenanceForm.get('description')?.invalid && maintenanceForm.get('description')?.touched">
-            Description is required.
-          </mat-error>
-        </mat-form-field>
-      </div>
-
-      <div class="form-row">
-        <mat-form-field class="form-group" appearance="outline">
-          <mat-label>Maintenance Date *</mat-label>
-          <input matInput [matDatepicker]="datePicker" formControlName="date" />
-          <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
-          <mat-datepicker #datePicker></mat-datepicker>
-          <mat-error *ngIf="maintenanceForm.get('date')?.invalid && maintenanceForm.get('date')?.touched">
-            Date is required.
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field class="form-group" appearance="outline">
-          <mat-label>Cost *</mat-label>
-          <input matInput id="cost" type="number" formControlName="cost" placeholder="Enter cost" min="0" step="0.01" />
-          <mat-error *ngIf="maintenanceForm.get('cost')?.invalid && maintenanceForm.get('cost')?.touched">
-            <span *ngIf="maintenanceForm.get('cost')?.errors?.['required']">Cost is required</span>
-            <span *ngIf="maintenanceForm.get('cost')?.errors?.['min']">Cost must be positive</span>
-          </mat-error>
-        </mat-form-field>
-      </div>
-
-      <div class="form-row">
-        <mat-form-field class="form-group" appearance="outline">
-          <mat-label>Maintenance Type</mat-label>
-          <mat-select formControlName="type">
-            <mat-option value="">Select Type</mat-option>
-            <mat-option value="preventive">Preventive</mat-option>
-            <mat-option value="corrective">Corrective</mat-option>
-            <mat-option value="emergency">Emergency</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <div class="form-group toggle-group">
-          <mat-label>Completed</mat-label>
-          <mat-slide-toggle formControlName="is_completed">Completed</mat-slide-toggle>
+<div class="form-container">
+  <mat-card class="maintenance-form">
+    <mat-card-header class="form-header">
+      <div class="header-content">
+        <div class="title-section">
+          <mat-card-title class="form-title">
+            <mat-icon class="title-icon" fontSet="material-icons-outlined">
+              {{ maintenanceId ? 'edit' : 'build' }}
+            </mat-icon>
+            {{ maintenanceId ? 'Edit Maintenance' : 'Add Maintenance Record' }}
+          </mat-card-title>
+          <mat-card-subtitle class="form-subtitle">
+            {{ maintenanceId ? 'Update maintenance details' : 'Create new maintenance record for vehicle' }}
+          </mat-card-subtitle>
         </div>
+        <mat-card-actions>
+          <button mat-stroked-button (click)="onCancel()" class="back-btn">
+            <mat-icon>arrow_back</mat-icon>
+            Back to List
+          </button>
+        </mat-card-actions>
       </div>
+    </mat-card-header>
 
-      <div class="form-actions">
-        <button mat-stroked-button type="button" (click)="onCancel()" class="cancel-btn">Cancel</button>
-        <button mat-raised-button type="submit" [disabled]="maintenanceForm.invalid" class="submit-btn" color="primary">
-          <mat-icon>{{ maintenanceId ? 'save' : 'add' }}</mat-icon>
-          {{ maintenanceId ? 'Update' : 'Add' }} Maintenance
-        </button>
-      </div>
-    </form>
-  </mat-card-content>
-</mat-card>
+    <mat-card-content class="form-content">
+      <form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()" class="maintenance-form-content">
+        <!-- Vehicle Selection -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon class="section-icon" fontSet="material-icons-outlined">directions_car</mat-icon>
+            Vehicle Information
+          </h3>
+          
+          <div class="form-row">
+            <mat-form-field class="form-field full-width" appearance="outline">
+              <mat-label>Vehicle *</mat-label>
+              <mat-select id="vehicle_id" formControlName="vehicle_id">
+                <mat-option value="">
+                  <span class="option-placeholder">Select Vehicle</span>
+                </mat-option>
+                <mat-option *ngFor="let vehicle of vehicles" [value]="vehicle.id" class="vehicle-option">
+                  <div class="vehicle-option-content">
+                    <span class="vehicle-name">{{ vehicle.name }}</span>
+                    <span *ngIf="vehicle.registrationNumber" class="vehicle-registration">{{ vehicle.registrationNumber }}</span>
+                    <span *ngIf="vehicle.model" class="vehicle-model">{{ vehicle.model }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix fontSet="material-icons-outlined">arrow_drop_down</mat-icon>
+              <mat-hint>Select the vehicle for maintenance</mat-hint>
+              <mat-error *ngIf="maintenanceForm.get('vehicle_id')?.invalid && maintenanceForm.get('vehicle_id')?.touched">
+                Vehicle selection is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Maintenance Details -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon class="section-icon" fontSet="material-icons-outlined">description</mat-icon>
+            Maintenance Details
+          </h3>
+          
+          <div class="form-row">
+            <mat-form-field class="form-field full-width" appearance="outline">
+              <mat-label>Description *</mat-label>
+              <textarea matInput id="description" formControlName="description" rows="4" 
+                        placeholder="Describe the maintenance work performed..."></textarea>
+              <mat-icon matSuffix fontSet="material-icons-outlined">notes</mat-icon>
+              <mat-hint>Detailed description of maintenance work</mat-hint>
+              <mat-error *ngIf="maintenanceForm.get('description')?.invalid && maintenanceForm.get('description')?.touched">
+                Maintenance description is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Maintenance Type</mat-label>
+              <mat-select formControlName="type">
+                <mat-option value="">
+                  <span class="option-placeholder">Select Type</span>
+                </mat-option>
+                <mat-option value="preventive" class="maintenance-option">
+                  <div class="maintenance-option-content">
+                    <mat-icon class="option-icon" fontSet="material-icons-outlined">prevent</mat-icon>
+                    <span>Preventive</span>
+                  </div>
+                </mat-option>
+                <mat-option value="corrective" class="maintenance-option">
+                  <div class="maintenance-option-content">
+                    <mat-icon class="option-icon" fontSet="material-icons-outlined">handyman</mat-icon>
+                    <span>Corrective</span>
+                  </div>
+                </mat-option>
+                <mat-option value="emergency" class="maintenance-option">
+                  <div class="maintenance-option-content">
+                    <mat-icon class="option-icon" fontSet="material-icons-outlined">emergency</mat-icon>
+                    <span>Emergency</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix fontSet="material-icons-outlined">build_circle</mat-icon>
+              <mat-hint>Type of maintenance performed</mat-hint>
+            </mat-form-field>
+
+            <div class="toggle-group-container">
+              <label class="toggle-label">Completion Status</label>
+              <div class="toggle-group">
+                <mat-slide-toggle formControlName="is_completed" color="primary">
+                  <span class="toggle-text">{{ maintenanceForm.get('is_completed')?.value ? 'Completed' : 'Pending' }}</span>
+                </mat-slide-toggle>
+                <mat-hint class="toggle-hint">Mark as completed when maintenance is finished</mat-hint>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cost & Date Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon class="section-icon" fontSet="material-icons-outlined">payments</mat-icon>
+            Cost & Scheduling
+          </h3>
+          
+          <div class="form-row">
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Maintenance Date *</mat-label>
+              <input matInput [matDatepicker]="datePicker" formControlName="date" />
+              <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+              <mat-datepicker #datePicker></mat-datepicker>
+              <mat-icon matSuffix fontSet="material-icons-outlined">calendar_today</mat-icon>
+              <mat-hint>Date when maintenance was performed</mat-hint>
+              <mat-error *ngIf="maintenanceForm.get('date')?.invalid && maintenanceForm.get('date')?.touched">
+                Maintenance date is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Cost (R) *</mat-label>
+              <input matInput id="cost" type="number" formControlName="cost" placeholder="0.00" min="0" step="0.01" />
+              <span matPrefix>R&nbsp;</span>
+              <mat-icon matSuffix fontSet="material-icons-outlined">attach_money</mat-icon>
+              <mat-hint>Total maintenance cost</mat-hint>
+              <mat-error *ngIf="maintenanceForm.get('cost')?.invalid && maintenanceForm.get('cost')?.touched">
+                <span *ngIf="maintenanceForm.get('cost')?.errors?.['required']">Cost is required</span>
+                <span *ngIf="maintenanceForm.get('cost')?.errors?.['min']">Cost must be positive</span>
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="onCancel()" class="cancel-btn">
+            <mat-icon>cancel</mat-icon>
+            Cancel
+          </button>
+          <button mat-raised-button type="submit" [disabled]="maintenanceForm.invalid || loading" class="submit-btn" color="primary">
+            <div class="button-content">
+              <mat-spinner *ngIf="loading" diameter="16" class="button-spinner"></mat-spinner>
+              <mat-icon *ngIf="!loading" class="button-icon">
+                {{ maintenanceId ? 'save' : 'add' }}
+              </mat-icon>
+              <span class="button-text">{{ maintenanceId ? 'Update Maintenance' : 'Add Maintenance' }}</span>
+            </div>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

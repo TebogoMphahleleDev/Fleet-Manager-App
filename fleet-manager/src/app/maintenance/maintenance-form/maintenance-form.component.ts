@@ -15,6 +15,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ConfirmDialogComponent } from '../../popup/confirm-dialog.component';
 
 /**
@@ -46,6 +47,7 @@ import { ConfirmDialogComponent } from '../../popup/confirm-dialog.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatSlideToggleModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './maintenance-form.component.html',
   styleUrls: ['./maintenance-form.component.scss'],
@@ -57,6 +59,7 @@ export class MaintenanceFormComponent implements OnInit {
   maintenanceForm: FormGroup;
   maintenanceId: string | null = null;
   vehicles: Vehicle[] = [];
+  loading: boolean = false;
 
   /**
    * Constructor - Dependency Injection
@@ -170,30 +173,38 @@ export class MaintenanceFormComponent implements OnInit {
 
     // Handle dialog result
     dialogRef.afterClosed().subscribe(result => {
-      if (result) 
+      if (result)
         {
-        
+        this.loading = true;
           const maintenanceData = this.maintenanceForm.value;
-        
+
           // Determine if adding or updating maintenance
           if (this.maintenanceId) {
           this.maintenanceService.updateMaintenance(this.maintenanceId, maintenanceData).subscribe({
             next: () => {
+              this.loading = false;
               this.popupService.showSuccess('Maintenance updated successfully');
               this.router.navigate(['/maintenance']);
             },
-            error: () => this.popupService.showError('Failed to update maintenance'),
+            error: () => {
+              this.loading = false;
+              this.popupService.showError('Failed to update maintenance');
+            },
           });
 
-        } 
+        }
         else
         {
           this.maintenanceService.addMaintenance(maintenanceData).subscribe({
             next: () => {
+              this.loading = false;
               this.popupService.showSuccess('Maintenance added successfully');
               this.router.navigate(['/maintenance']);
             },
-            error: () => this.popupService.showError('Failed to add maintenance'),
+            error: () => {
+              this.loading = false;
+              this.popupService.showError('Failed to add maintenance');
+            },
           });
         }
       }

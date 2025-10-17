@@ -186,6 +186,48 @@ export class VehicleFormComponent implements OnInit {
   }
 
   /**
+   * Checks if the vehicle's license is expired
+   *
+   * @returns true if the license expiry date is in the past
+   */
+  isLicenseExpired(): boolean {
+    const expiryDate = this.vehicleForm.get('licenseExpiryDate')?.value;
+    if (!expiryDate) return false;
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    return expiry < today;
+  }
+
+  /**
+   * Checks if the vehicle's license is expiring soon
+   *
+   * @returns true if the license expires within 30 days
+   */
+  isLicenseExpiringSoon(): boolean {
+    const expiryDate = this.vehicleForm.get('licenseExpiryDate')?.value;
+    if (!expiryDate) return false;
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const thirtyDaysFromNow = new Date(today.getTime() + (30 * 24 * 60 * 60 * 1000));
+    return expiry <= thirtyDaysFromNow && expiry >= today;
+  }
+
+  /**
+   * Gets the license status as a string
+   *
+   * @returns status string: "Expired", "Expiring Soon", or "Valid"
+   */
+  getLicenseStatus(): string {
+    if (this.isLicenseExpired()) {
+      return 'Expired';
+    } else if (this.isLicenseExpiringSoon()) {
+      return 'Expiring Soon';
+    } else {
+      return 'Valid';
+    }
+  }
+
+  /**
    * Handles Cancel Action
    *
    * Navigates back to the vehicle list without saving changes.
