@@ -1,112 +1,217 @@
-<div class="fuel-expense-form">
-  <div class="form-header">
-    <h2>{{ isEditMode ? 'Edit Fuel Expense' : 'Add New Fuel Expense' }}</h2>
-    <button (click)="onCancel()" class="back-btn">
-      <span class="btn-icon">⬅️</span>
-      Back to List
-    </button>
-  </div>
-
-  <form [formGroup]="fuelExpenseForm" (ngSubmit)="onSubmit()" class="expense-form">
-    <div class="form-row">
-      <div class="form-group">
-        <label for="expense_type">Expense Type *</label>
-        <select id="expense_type" formControlName="expense_type" class="form-control">
-          <option value="">Select Expense Type</option>
-          <option value="fuel">Fuel</option>
-          <option value="maintenance">Maintenance</option>
-          <option value="insurance">Insurance</option>
-          <option value="toll">Toll</option>
-          <option value="parking">Parking</option>
-          <option value="other">Other</option>
-        </select>
-        @if (fuelExpenseForm.get('expense_type')?.invalid && fuelExpenseForm.get('expense_type')?.touched) {
-          <div class="error-message">Expense type is required</div>
-        }
+<div class="form-container">
+  <mat-card class="fuel-expense-form">
+    <mat-card-header class="form-header">
+      <div class="header-content">
+        <div class="title-section">
+          <mat-card-title class="form-title">
+            <mat-icon class="title-icon" fontSet="material-icons-outlined">
+              {{ isEditMode ? 'edit' : 'local_gas_station' }}
+            </mat-icon>
+            {{ isEditMode ? 'Edit Fuel Expense' : 'Add New Fuel Expense' }}
+          </mat-card-title>
+          <mat-card-subtitle class="form-subtitle">
+            {{ isEditMode ? 'Update expense details' : 'Record new fuel or maintenance expense' }}
+          </mat-card-subtitle>
+        </div>
+        <mat-card-actions>
+          <button mat-stroked-button (click)="onCancel()" class="back-btn">
+            <mat-icon>arrow_back</mat-icon>
+            Back to List
+          </button>
+        </mat-card-actions>
       </div>
+    </mat-card-header>
 
-      <div class="form-group">
-        <label for="expense_date">Expense Date *</label>
-        <input type="date" id="expense_date" formControlName="expense_date" class="form-control">
-        @if (fuelExpenseForm.get('expense_date')?.invalid && fuelExpenseForm.get('expense_date')?.touched) {
-          <div class="error-message">Expense date is required</div>
-        }
-      </div>
-    </div>
+    <mat-card-content class="form-content">
+      <form [formGroup]="fuelExpenseForm" (ngSubmit)="onSubmit()" class="expense-form">
+        <!-- Expense Details Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon class="section-icon" fontSet="material-icons-outlined">receipt</mat-icon>
+            Expense Details
+          </h3>
+          
+          <div class="form-row">
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Expense Type *</mat-label>
+              <mat-select id="expense_type" formControlName="expense_type">
+                <mat-option value="">Select Expense Type</mat-option>
+                <mat-option value="fuel">Fuel</mat-option>
+              </mat-select>
+              <mat-icon matSuffix fontSet="material-icons-outlined">category</mat-icon>
+              <mat-hint>Select the type of expense</mat-hint>
+              <mat-error *ngIf="fuelExpenseForm.get('expense_type')?.invalid && fuelExpenseForm.get('expense_type')?.touched">
+                Expense type is required
+              </mat-error>
+            </mat-form-field>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label for="cost">Cost (R) *</label>
-        <input type="number" id="cost" formControlName="cost" class="form-control" step="0.01" min="0">
-        @if (fuelExpenseForm.get('cost')?.invalid && fuelExpenseForm.get('cost')?.touched) {
-          <div class="error-message">
-            @if (fuelExpenseForm.get('cost')?.errors?.['required']) {
-              Cost is required
-            } @else if (fuelExpenseForm.get('cost')?.errors?.['min']) {
-              Cost must be positive
-            }
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Expense Date *</mat-label>
+              <input matInput [matDatepicker]="datePicker" formControlName="expense_date" />
+              <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+              <mat-datepicker #datePicker></mat-datepicker>
+              <mat-icon matSuffix fontSet="material-icons-outlined">calendar_today</mat-icon>
+              <mat-hint>Date when expense occurred</mat-hint>
+              <mat-error *ngIf="fuelExpenseForm.get('expense_date')?.invalid && fuelExpenseForm.get('expense_date')?.touched">
+                Expense date is required
+              </mat-error>
+            </mat-form-field>
           </div>
-        }
-      </div>
 
-      <div class="form-group">
-        <label for="fuel_type">Fuel Type</label>
-        <select id="fuel_type" formControlName="fuel_type" class="form-control">
-          <option value="">Select Fuel Type</option>
-          <option value="petrol">Petrol</option>
-          <option value="diesel">Diesel</option>
-        </select>
-      </div>
-    </div>
+          <div class="form-row">
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Cost (R) *</mat-label>
+              <input matInput type="number" id="cost" formControlName="cost" step="0.01" min="0" placeholder="0.00">
+              <span matPrefix>R&nbsp;</span>
+              <mat-icon matSuffix fontSet="material-icons-outlined">payments</mat-icon>
+              <mat-hint>Total cost in South African Rand</mat-hint>
+              <mat-error *ngIf="fuelExpenseForm.get('cost')?.invalid && fuelExpenseForm.get('cost')?.touched">
+                <span *ngIf="fuelExpenseForm.get('cost')?.errors?.['required']">Cost is required</span>
+                <span *ngIf="fuelExpenseForm.get('cost')?.errors?.['min']">Cost must be positive</span>
+              </mat-error>
+            </mat-form-field>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label for="quantity">Quantity (Liters)</label>
-        <input type="number" id="quantity" formControlName="quantity" class="form-control" step="0.01" min="0">
-        @if (fuelExpenseForm.get('quantity')?.invalid && fuelExpenseForm.get('quantity')?.touched) {
-          <div class="error-message">Quantity must be positive</div>
-        }
-      </div>
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Fuel Type</mat-label>
+              <mat-select id="fuel_type" formControlName="fuel_type">
+                <mat-option value="">Select Fuel Type</mat-option>
+                <mat-option value="petrol">Petrol</mat-option>
+                <mat-option value="diesel">Diesel</mat-option>
+              </mat-select>
+              <mat-icon matSuffix fontSet="material-icons-outlined">local_gas_station</mat-icon>
+              <mat-hint>Type of fuel purchased</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label for="location">Location</label>
-        <input type="text" id="location" formControlName="location" class="form-control" placeholder="Enter location">
-      </div>
-    </div>
+        <!-- Quantity & Location Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon class="section-icon" fontSet="material-icons-outlined">straighten</mat-icon>
+            Additional Information
+          </h3>
+          
+          <div class="form-row">
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Quantity (Liters)</mat-label>
+              <input matInput type="number" id="quantity" formControlName="quantity" step="0.01" min="0" placeholder="0.00">
+              <span matPrefix class="quantity-prefix">L&nbsp;</span>
+              <mat-icon matSuffix fontSet="material-icons-outlined">water_drop</mat-icon>
+              <mat-hint>Amount of fuel in liters</mat-hint>
+              <mat-error *ngIf="fuelExpenseForm.get('quantity')?.invalid && fuelExpenseForm.get('quantity')?.touched">
+                Quantity must be positive
+              </mat-error>
+            </mat-form-field>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label for="vehicle_id">Vehicle</label>
-        <select id="vehicle_id" formControlName="vehicle_id" class="form-control">
-          <option value="">Select Vehicle</option>
-          @for (vehicle of vehicles; track vehicle.id) {
-            <option [value]="vehicle.id">{{ vehicle.name }} - {{ vehicle.registrationNumber }}</option>
-          }
-        </select>
-      </div>
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Location</mat-label>
+              <input matInput type="text" id="location" formControlName="location" placeholder="Enter location">
+              <mat-icon matSuffix fontSet="material-icons-outlined">location_on</mat-icon>
+              <mat-hint>Where the expense occurred</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label for="driver_id">Driver</label>
-        <select id="driver_id" formControlName="driver_id" class="form-control">
-          <option value="">Select Driver</option>
-          @for (driver of drivers; track driver.id) {
-            <option [value]="driver.id">{{ driver.name }}</option>
-          }
-        </select>
-      </div>
-    </div>
+        <!-- Time & Recurring Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon class="section-icon" fontSet="material-icons-outlined">schedule</mat-icon>
+            Time & Recurrence
+          </h3>
+          
+          <div class="form-row">
+            <div class="time-group-container">
+              <label class="time-label">Time of Expense</label>
+              <div class="time-group">
+                <mat-form-field class="time-field" appearance="outline">
+                  <mat-label>Hour</mat-label>
+                  <mat-select formControlName="hour">
+                    <mat-option *ngFor="let hour of hours" [value]="hour">{{ hour }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
 
-    <div class="form-actions">
-      <button type="button" (click)="onCancel()" class="cancel-btn">Cancel</button>
-      <button type="submit" [disabled]="loading || fuelExpenseForm.invalid" class="submit-btn">
-        @if (loading) {
-          <span class="loading-icon">⏳</span>
-          Saving...
-        } @else {
-          <span class="btn-icon">{{ isEditMode ? '💾' : '➕' }}</span>
-          {{ isEditMode ? 'Update' : 'Create' }} Expense
-        }
-      </button>
-    </div>
-  </form>
+                <mat-form-field class="time-field" appearance="outline">
+                  <mat-label>Minute</mat-label>
+                  <mat-select formControlName="minute">
+                    <mat-option *ngFor="let minute of minutes" [value]="minute">{{ minute }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="toggle-group-container">
+              <label class="toggle-label">Recurring Expense</label>
+              <div class="toggle-group">
+                <mat-slide-toggle formControlName="is_recurring" color="primary">
+                  <span class="toggle-text">{{ fuelExpenseForm.get('is_recurring')?.value ? 'Recurring' : 'One-time' }}</span>
+                </mat-slide-toggle>
+                <mat-hint class="toggle-hint">Enable for monthly recurring expenses</mat-hint>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assignment Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon class="section-icon" fontSet="material-icons-outlined">assignment</mat-icon>
+            Vehicle & Driver Assignment
+          </h3>
+          
+          <div class="form-row">
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Vehicle</mat-label>
+              <mat-select id="vehicle_id" formControlName="vehicle_id">
+                <mat-option value="">
+                  <span class="option-placeholder">No vehicle assigned</span>
+                </mat-option>
+                <mat-option *ngFor="let vehicle of vehicles" [value]="vehicle.id" class="vehicle-option">
+                  <div class="vehicle-option-content">
+                    <span class="vehicle-name">{{ vehicle.name }}</span>
+                    <span class="vehicle-registration">{{ vehicle.registrationNumber }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix fontSet="material-icons-outlined">directions_car</mat-icon>
+              <mat-hint>Select associated vehicle</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Driver</mat-label>
+              <mat-select id="driver_id" formControlName="driver_id">
+                <mat-option value="">
+                  <span class="option-placeholder">No driver assigned</span>
+                </mat-option>
+                <mat-option *ngFor="let driver of drivers" [value]="driver.id" class="driver-option">
+                  <div class="driver-option-content">
+                    <span class="driver-name">{{ driver.name }}</span>
+                    <span *ngIf="driver.licenseNumber" class="driver-license">{{ driver.licenseNumber }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix fontSet="material-icons-outlined">person</mat-icon>
+              <mat-hint>Select associated driver</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="onCancel()" class="cancel-btn">
+            <mat-icon>cancel</mat-icon>
+            Cancel
+          </button>
+          <button mat-raised-button type="submit" [disabled]="loading || fuelExpenseForm.invalid" class="submit-btn" color="primary">
+            <div class="button-content">
+              <mat-spinner *ngIf="loading" diameter="16" class="button-spinner"></mat-spinner>
+              <mat-icon *ngIf="!loading" class="button-icon">
+                {{ isEditMode ? 'save' : 'add' }}
+              </mat-icon>
+              <span class="button-text">{{ isEditMode ? 'Update Expense' : 'Create Expense' }}</span>
+            </div>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>

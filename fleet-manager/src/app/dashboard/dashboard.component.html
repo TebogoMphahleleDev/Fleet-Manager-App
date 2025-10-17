@@ -1,70 +1,107 @@
 <div class="dashboard">
+  <!-- Header -->
   <div class="dashboard-header">
-    <h1>Fleet Manager Dashboard</h1>
-    <p>Manage your fleet operations</p>
+    <h1 class="dashboard-title">Fleet Manager Dashboard</h1>
+    <p class="dashboard-subtitle">Monitor and manage your fleet operations</p>
   </div>
 
   <!-- Statistics Cards -->
   @if (!loading && stats) {
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon">🚗</div>
-      <div class="stat-content">
-        <h3>{{ stats.total_vehicles }}</h3>
-        <p>Total Vehicles</p>
-      </div>
-    </div>
+  <div class="stats-section">
+    <h2 class="section-title">Overview</h2>
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon-container">
+            <mat-icon class="stat-icon" fontSet="material-icons-outlined">directions_car</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ stats.total_vehicles }}</h3>
+            <p>Total Vehicles</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
 
-    <div class="stat-card">
-      <div class="stat-icon">👤</div>
-      <div class="stat-content">
-        <h3>{{ stats.total_drivers }}</h3>
-        <p>Total Drivers</p>
-      </div>
-    </div>
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon-container">
+            <mat-icon class="stat-icon" fontSet="material-icons-outlined">person</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ stats.total_drivers }}</h3>
+            <p>Total Drivers</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
 
-    <div class="stat-card">
-      <div class="stat-icon">📍</div>
-      <div class="stat-content">
-        <h3>{{ stats.total_trips }}</h3>
-        <p>Total Trips</p>
-      </div>
-    </div>
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon-container">
+            <mat-icon class="stat-icon" fontSet="material-icons-outlined">location_on</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ stats.total_trips }}</h3>
+            <p>Total Trips</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
 
-    <div class="stat-card">
-      <div class="stat-icon">📅</div>
-      <div class="stat-content">
-        <h3>{{ stats.trips_this_month }}</h3>
-        <p>Trips This Month</p>
-      </div>
-    </div>
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon-container">
+            <mat-icon class="stat-icon" fontSet="material-icons-outlined">calendar_month</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ stats.trips_this_month }}</h3>
+            <p>Trips This Month</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
 
-    <div class="stat-card">
-      <div class="stat-icon">💰</div>
-      <div class="stat-content">
-        <h3>R{{ stats.maintenance_costs.toFixed(2) }}</h3>
-        <p>Maintenance & Fuel Costs (12 Months)</p>
-      </div>
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon-container">
+            <mat-icon class="stat-icon" fontSet="material-icons-outlined">attach_money</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>R{{ stats.maintenance_costs.toFixed(2) }}</h3>
+            <p>Maintenance & Fuel Costs (12 Months)</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
     </div>
   </div>
 
   <!-- Charts Section -->
   @if (monthlyTrips.length > 0 || maintenanceCosts.length > 0) {
-  <div class="charts-grid">
-    <div class="chart-card">
-      <canvas baseChart
-              [data]="tripsChartData"
-              [options]="tripsChartOptions"
-              type="line">
-      </canvas>
-    </div>
+  <div class="charts-section">
+    <h2 class="section-title">Analytics</h2>
+    <div class="charts-grid">
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Monthly Trips</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <canvas baseChart
+                  [data]="tripsChartData"
+                  [options]="tripsChartOptions"
+                  type="line">
+          </canvas>
+        </mat-card-content>
+      </mat-card>
 
-    <div class="chart-card">
-      <canvas baseChart
-              [data]="maintenanceChartData"
-              [options]="maintenanceChartOptions"
-              type="line">
-      </canvas>
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Maintenance Costs</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <canvas baseChart
+                  [data]="maintenanceChartData"
+                  [options]="maintenanceChartOptions"
+                  type="line">
+          </canvas>
+        </mat-card-content>
+      </mat-card>
     </div>
   </div>
   }
@@ -72,47 +109,73 @@
 
   <!-- Loading State -->
   @if (loading) {
-  <div class="loading">
+  <div class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
     <p>Loading dashboard statistics...</p>
   </div>
   }
 
   <!-- Management Links -->
-  <div class="links-grid">
-    <a routerLink="/vehicles" class="dashboard-card">
-      <div class="card-icon">🚗</div>
-      <h3>Manage Vehicles</h3>
-      <p>View and manage your vehicle fleet</p>
-    </a>
+  <div class="management-section">
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="links-grid">
+      <mat-card class="dashboard-card" routerLink="/vehicles">
+        <mat-card-content>
+          <div class="card-icon-container">
+            <mat-icon class="card-icon" fontSet="material-icons-outlined">directions_car</mat-icon>
+          </div>
+          <h3>Manage Vehicles</h3>
+          <p>View and manage your vehicle fleet</p>
+        </mat-card-content>
+      </mat-card>
 
-    <a routerLink="/drivers" class="dashboard-card">
-      <div class="card-icon">👤</div>
-      <h3>Manage Drivers</h3>
-      <p>Handle driver information and assignments</p>
-    </a>
+      <mat-card class="dashboard-card" routerLink="/drivers">
+        <mat-card-content>
+          <div class="card-icon-container">
+            <mat-icon class="card-icon" fontSet="material-icons-outlined">person</mat-icon>
+          </div>
+          <h3>Manage Drivers</h3>
+          <p>Handle driver information and assignments</p>
+        </mat-card-content>
+      </mat-card>
 
-    <a routerLink="/trips" class="dashboard-card">
-      <div class="card-icon">📍</div>
-      <h3>Manage Trips</h3>
-      <p>Schedule and track vehicle trips</p>
-    </a>
+      <mat-card class="dashboard-card" routerLink="/trips">
+        <mat-card-content>
+          <div class="card-icon-container">
+            <mat-icon class="card-icon" fontSet="material-icons-outlined">location_on</mat-icon>
+          </div>
+          <h3>Manage Trips</h3>
+          <p>Schedule and track vehicle trips</p>
+        </mat-card-content>
+      </mat-card>
 
-    <a routerLink="/maintenance" class="dashboard-card">
-      <div class="card-icon">🔧</div>
-      <h3>Manage Maintenance</h3>
-      <p>Track maintenance and repairs</p>
-    </a>
+      <mat-card class="dashboard-card" routerLink="/maintenance">
+        <mat-card-content>
+          <div class="card-icon-container">
+            <mat-icon class="card-icon" fontSet="material-icons-outlined">build</mat-icon>
+          </div>
+          <h3>Manage Maintenance</h3>
+          <p>Track maintenance and repairs</p>
+        </mat-card-content>
+      </mat-card>
 
-    <a routerLink="/fuel-expenses" class="dashboard-card">
-      <div class="card-icon">⛽</div>
-      <h3>Fuel Expenses</h3>
-      <p>Track fuel and other vehicle expenses</p>
-    </a>
+      <mat-card class="dashboard-card" routerLink="/fuel-expenses">
+        <mat-card-content>
+          <div class="card-icon-container">
+            <mat-icon class="card-icon" fontSet="material-icons-outlined">local_gas_station</mat-icon>
+          </div>
+          <h3>Fuel Expenses</h3>
+          <p>Track fuel and other vehicle expenses</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
 
-  <button (click)="logout()" class="logout-btn">
-    <span class="logout-icon">🚪</span>
-    Logout
-  </button>
+  <!-- Logout Button -->
+  <div class="logout-section">
+    <button mat-stroked-button (click)="logout()" class="logout-btn">
+      <mat-icon class="logout-icon">logout</mat-icon>
+      Logout
+    </button>
+  </div>
 </div>
-s

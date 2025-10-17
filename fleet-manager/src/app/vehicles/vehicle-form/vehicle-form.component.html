@@ -1,88 +1,153 @@
-<div class="vehicle-form">
-  <div class="form-header">
-    <h2>{{ vehicleId ? 'Edit Vehicle' : 'Add New Vehicle' }}</h2>
-    <button (click)="onCancel()" class="back-btn">
-      <span class="btn-icon">⬅️</span>
-      Back to List
-    </button>
-  </div>
-
-  <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()" class="vehicle-form-content">
-    <div class="form-row">
-      <div class="form-group">
-        <label for="name">Vehicle Name *</label>
-        <input id="name" formControlName="name" class="form-control" placeholder="Enter vehicle name" />
-        @if (vehicleForm.get('name')?.invalid && vehicleForm.get('name')?.touched) {
-          <div class="error-message">Vehicle name is required</div>
-        }
+<div class="form-container">
+  <mat-card class="vehicle-form">
+    <mat-card-header class="form-header">
+      <div class="header-content">
+        <div class="title-section">
+          <mat-card-title class="form-title">
+            <mat-icon class="title-icon" fontSet="material-icons-outlined">
+              {{ vehicleId ? 'edit' : 'directions_car' }}
+            </mat-icon>
+            {{ vehicleId ? 'Edit Vehicle' : 'Add New Vehicle' }}
+          </mat-card-title>
+          <mat-card-subtitle class="form-subtitle">
+            {{ vehicleId ? 'Update vehicle information' : 'Register a new vehicle to the fleet' }}
+          </mat-card-subtitle>
+        </div>
+        <mat-card-actions>
+          <button mat-stroked-button (click)="onCancel()" class="back-btn">
+            <mat-icon>arrow_back</mat-icon>
+            Back to List
+          </button>
+        </mat-card-actions>
       </div>
+    </mat-card-header>
 
-      <div class="form-group">
-        <label for="model">Model</label>
-        <input id="model" formControlName="model" class="form-control" placeholder="Enter model" />
-      </div>
-    </div>
+    <mat-card-content class="form-content">
+      <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()" class="vehicle-form-content">
+        <!-- Basic Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon class="section-icon" fontSet="material-icons-outlined">info</mat-icon>
+            Basic Information
+          </h3>
+          
+          <div class="form-row">
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Vehicle Name *</mat-label>
+              <input matInput id="name" formControlName="name" placeholder="Enter vehicle name" />
+              <mat-icon matSuffix fontSet="material-icons-outlined">badge</mat-icon>
+              <mat-hint>Unique name for identification</mat-hint>
+              <mat-error *ngIf="vehicleForm.get('name')?.invalid && vehicleForm.get('name')?.touched">
+                Vehicle name is required
+              </mat-error>
+            </mat-form-field>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label for="make">Make</label>
-        <input id="make" formControlName="make" class="form-control" placeholder="Enter make" />
-      </div>
-
-      <div class="form-group">
-        <label for="color">Color</label>
-        <input id="color" formControlName="color" class="form-control" placeholder="Enter color" />
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label for="registrationNumber">Registration Number *</label>
-        <input id="registrationNumber" formControlName="registrationNumber" class="form-control" placeholder="Enter registration number" />
-        @if (vehicleForm.get('registrationNumber')?.invalid && vehicleForm.get('registrationNumber')?.touched) {
-          <div class="error-message">Registration number is required</div>
-        }
-      </div>
-
-      <div class="form-group">
-        <label for="yearOfCar">Year of Car *</label>
-        <input id="yearOfCar" type="number" formControlName="yearOfCar" class="form-control" placeholder="Enter year" min="1900" max="2025" />
-        @if (vehicleForm.get('yearOfCar')?.invalid && vehicleForm.get('yearOfCar')?.touched) {
-          <div class="error-message">
-            @if (vehicleForm.get('yearOfCar')?.errors?.['required']) {
-              Year is required
-            } @else if (vehicleForm.get('yearOfCar')?.errors?.['min']) {
-              Year must be at least 1900
-            } @else if (vehicleForm.get('yearOfCar')?.errors?.['max']) {
-              Year must be at most 2025
-            }
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Model</mat-label>
+              <input matInput id="model" formControlName="model" placeholder="Enter model" />
+              <mat-icon matSuffix fontSet="material-icons-outlined">model_training</mat-icon>
+              <mat-hint>Vehicle model name</mat-hint>
+            </mat-form-field>
           </div>
-        }
-      </div>
-    </div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label for="licenseExpiryDate">License Expiry Date</label>
-        <input id="licenseExpiryDate" type="date" formControlName="licenseExpiryDate" class="form-control" />
-      </div>
+          <div class="form-row">
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Make</mat-label>
+              <input matInput id="make" formControlName="make" placeholder="Enter manufacturer" />
+              <mat-icon matSuffix fontSet="material-icons-outlined">business</mat-icon>
+              <mat-hint>Vehicle manufacturer</mat-hint>
+            </mat-form-field>
 
-      <div class="form-group">
-        <!-- Empty for spacing -->
-      </div>
-    </div>
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Color</mat-label>
+              <input matInput id="color" formControlName="color" placeholder="Enter color" />
+              <mat-icon matSuffix fontSet="material-icons-outlined">palette</mat-icon>
+              <mat-hint>Vehicle exterior color</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
 
-    <div class="form-actions">
-      <button type="button" (click)="onCancel()" class="cancel-btn">Cancel</button>
-      <button type="submit" [disabled]="loading || vehicleForm.invalid" class="submit-btn">
-        @if (loading) {
-          <span class="loading-icon">⏳</span>
-          Saving...
-        } @else {
-          <span class="btn-icon">{{ vehicleId ? '💾' : '🚗' }}</span>
-          {{ vehicleId ? 'Update' : 'Add' }} Vehicle
-        }
-      </button>
-    </div>
-  </form>
+        <!-- Registration & Details Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon class="section-icon" fontSet="material-icons-outlined">assignment</mat-icon>
+            Registration & Details
+          </h3>
+          
+          <div class="form-row">
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Registration Number *</mat-label>
+              <input matInput id="registrationNumber" formControlName="registrationNumber" 
+                     placeholder="Enter registration number" uppercase />
+              <mat-icon matSuffix fontSet="material-icons-outlined">format_list_numbered</mat-icon>
+              <mat-hint>Official registration number</mat-hint>
+              <mat-error *ngIf="vehicleForm.get('registrationNumber')?.invalid && vehicleForm.get('registrationNumber')?.touched">
+                Registration number is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Year of Car *</mat-label>
+              <input matInput id="yearOfCar" type="number" formControlName="yearOfCar" 
+                     placeholder="Enter year" min="1900" max="2025" />
+              <mat-icon matSuffix fontSet="material-icons-outlined">calendar_today</mat-icon>
+              <mat-hint>Manufacturing year (1900-2025)</mat-hint>
+              <mat-error *ngIf="vehicleForm.get('yearOfCar')?.invalid && vehicleForm.get('yearOfCar')?.touched">
+                <span *ngIf="vehicleForm.get('yearOfCar')?.errors?.['required']">Year is required</span>
+                <span *ngIf="vehicleForm.get('yearOfCar')?.errors?.['min']">Year must be at least 1900</span>
+                <span *ngIf="vehicleForm.get('yearOfCar')?.errors?.['max']">Year must be at most 2025</span>
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>License Expiry Date</mat-label>
+              <input matInput [matDatepicker]="expiryPicker" formControlName="licenseExpiryDate" />
+              <mat-datepicker-toggle matSuffix [for]="expiryPicker"></mat-datepicker-toggle>
+              <mat-datepicker #expiryPicker></mat-datepicker>
+              <mat-icon matSuffix fontSet="material-icons-outlined">event</mat-icon>
+              <mat-hint>Vehicle license expiration date</mat-hint>
+            </mat-form-field>
+
+            <div class="status-indicator">
+              <div class="status-content">
+                <mat-icon class="status-icon" fontSet="material-icons-outlined" 
+                          [class.expired]="isLicenseExpired()"
+                          [class.warning]="isLicenseExpiringSoon()">
+                  {{ isLicenseExpired() ? 'warning' : isLicenseExpiringSoon() ? 'schedule' : 'check_circle' }}
+                </mat-icon>
+                <div class="status-text">
+                  <span class="status-label">License Status</span>
+                  <span class="status-value" [class.expired]="isLicenseExpired()"
+                        [class.warning]="isLicenseExpiringSoon()">
+                    {{ getLicenseStatus() }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="onCancel()" class="cancel-btn">
+            <mat-icon>cancel</mat-icon>
+            Cancel
+          </button>
+          <button mat-raised-button type="submit" [disabled]="loading || vehicleForm.invalid" class="submit-btn" color="primary">
+            <div class="button-content">
+              <mat-spinner *ngIf="loading" diameter="16" class="button-spinner"></mat-spinner>
+              <mat-icon *ngIf="!loading" class="button-icon">
+                {{ vehicleId ? 'save' : 'directions_car' }}
+              </mat-icon>
+              <span class="button-text">
+                {{ vehicleId ? 'Update Vehicle' : 'Add Vehicle' }}
+              </span>
+            </div>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>

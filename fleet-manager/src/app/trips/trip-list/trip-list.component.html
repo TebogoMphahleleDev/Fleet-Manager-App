@@ -1,23 +1,64 @@
-<div class="trip-list">
-  <div class="list-header">
-    <button routerLink="/dashboard" class="back-btn">
-      <span class="btn-icon">⬅️</span>
-      Back to Dashboard
-    </button>
-    <h2>Trips</h2>
-    <a routerLink="/trips/form" class="add-btn">
-      <span class="btn-icon">➕</span>
-      Add New Trip
-    </a>
-  </div>
-  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
-  <ul>
-    @for (trip of trips; track trip.id) {
-      <li>
-        Driver ID: {{ trip.driver_id }}, Vehicle ID: {{ trip.vehicle_id }}, From: {{ trip.start_location }} to {{ trip.end_location }}, {{ trip.start_time }} - {{ trip.end_time }}
-        <a [routerLink]="['/trips/form', trip.id]">Edit</a>
-        <button (click)="deleteTrip(trip.id)">Delete</button>
-      </li>
+<mat-card class="trip-list">
+  <mat-card-header class="list-header">
+    <mat-card-title>Trips</mat-card-title>
+    <mat-card-actions>
+      <button mat-stroked-button routerLink="/dashboard" class="back-btn">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Dashboard
+      </button>
+      <button mat-raised-button routerLink="/trips/form" class="add-btn" color="primary">
+        <mat-icon>add</mat-icon>
+        Add New Trip
+      </button>
+    </mat-card-actions>
+  </mat-card-header>
+
+  <mat-card-content>
+    @if (errorMessage) {
+      <mat-card class="error-message">
+        <mat-card-content>
+          <mat-icon class="error-icon">warning</mat-icon>
+          {{ errorMessage }}
+        </mat-card-content>
+      </mat-card>
     }
-  </ul>
-</div>
+
+    <div class="trips-container">
+      @for (trip of trips; track trip.id) {
+        <mat-card class="trip-card">
+          <mat-card-content>
+            <div class="trip-info">
+              <h3 class="trip-route">{{ trip.start_location }} to {{ trip.end_location }}</h3>
+              <p class="trip-details">
+                <span class="label">Driver ID:</span> {{ trip.driver_id }} |
+                <span class="label">Vehicle ID:</span> {{ trip.vehicle_id }}
+              </p>
+              <p class="trip-times">
+                <span class="label">Start:</span> {{ trip.start_time }} |
+                <span class="label">End:</span> {{ trip.end_time }}
+              </p>
+            </div>
+            <div class="trip-actions">
+              <button mat-stroked-button [routerLink]="['/trips/form', trip.id]" class="edit-btn">
+                <mat-icon>edit</mat-icon>
+                Edit
+              </button>
+              <button mat-stroked-button (click)="deleteTrip(trip.id)" class="delete-btn" color="warn">
+                <mat-icon>delete</mat-icon>
+                Delete
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+
+    @if (trips.length === 0) {
+      <mat-card class="empty-state">
+        <mat-card-content>
+          <p>No trips found. Add your first trip to get started.</p>
+        </mat-card-content>
+      </mat-card>
+    }
+  </mat-card-content>
+</mat-card>

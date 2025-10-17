@@ -1,76 +1,121 @@
-<div class="driver-form">
-  <div class="form-header">
-    <h2>{{ driverId ? 'Edit Driver' : 'Add New Driver' }}</h2>
-    <button (click)="onCancel()" class="back-btn">
-      <span class="btn-icon">⬅️</span>
-      Back to List
-    </button>
-  </div>
-
-  <form [formGroup]="driverForm" (ngSubmit)="onSubmit()" class="driver-form-content">
-    <div class="form-row">
-      <div class="form-group">
-        <label for="name">Driver Name *</label>
-        <input id="name" formControlName="name" class="form-control" placeholder="Enter driver name" />
-        @if (driverForm.get('name')?.invalid && driverForm.get('name')?.touched) {
-          <div class="error-message">Driver name is required</div>
-        }
+<div class="form-container">
+  <mat-card class="driver-form">
+    <mat-card-header class="form-header">
+      <div class="header-content">
+        <div class="title-section">
+          <mat-card-title class="form-title">
+            <mat-icon class="title-icon" fontSet="material-icons-outlined">
+              {{ driverId ? 'edit' : 'person_add' }}
+            </mat-icon>
+            {{ driverId ? 'Edit Driver' : 'Add New Driver' }}
+          </mat-card-title>
+          <mat-card-subtitle class="form-subtitle">
+            {{ driverId ? 'Update driver information' : 'Create a new driver profile' }}
+          </mat-card-subtitle>
+        </div>
+        <mat-card-actions>
+          <button mat-stroked-button (click)="onCancel()" class="back-btn">
+            <mat-icon>arrow_back</mat-icon>
+            Back to List
+          </button>
+        </mat-card-actions>
       </div>
+    </mat-card-header>
 
-      <div class="form-group">
-        <label for="licenseNumber">License Number</label>
-        <input id="licenseNumber" formControlName="licenseNumber" class="form-control" placeholder="Enter license number" />
-      </div>
-    </div>
+    <mat-card-content class="form-content">
+      <form [formGroup]="driverForm" (ngSubmit)="onSubmit()" class="driver-form-content">
+        <!-- Personal Information Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon class="section-icon" fontSet="material-icons-outlined">person</mat-icon>
+            Personal Information
+          </h3>
+          
+          <div class="form-row">
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Driver Name *</mat-label>
+              <input matInput id="name" formControlName="name" placeholder="Enter driver's full name" />
+              <mat-icon matSuffix fontSet="material-icons-outlined">badge</mat-icon>
+              <mat-hint>Full name as it appears on license</mat-hint>
+              <mat-error *ngIf="driverForm.get('name')?.invalid && driverForm.get('name')?.touched">
+                Driver name is required
+              </mat-error>
+            </mat-form-field>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label for="contactInfo">Contact Info</label>
-        <input id="contactInfo" formControlName="contactInfo" class="form-control" placeholder="Enter contact information" />
-      </div>
-
-      <div class="form-group">
-        <label for="numberOfExperience">Years of Experience</label>
-        <input id="numberOfExperience" type="number" formControlName="numberOfExperience" class="form-control" placeholder="Enter years of experience" min="0" />
-        @if (driverForm.get('numberOfExperience')?.invalid && driverForm.get('numberOfExperience')?.touched) {
-          <div class="error-message">
-            @if (driverForm.get('numberOfExperience')?.errors?.['min']) {
-              Experience must be at least 0
-            } @else if (driverForm.get('numberOfExperience')?.errors?.['pattern']) {
-              Experience must be a positive integer
-            }
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>License Number</mat-label>
+              <input matInput id="licenseNumber" formControlName="licenseNumber" placeholder="Enter license number" />
+              <mat-icon matSuffix fontSet="material-icons-outlined">credit_card</mat-icon>
+              <mat-hint>Driver's license identification</mat-hint>
+            </mat-form-field>
           </div>
-        }
-      </div>
-    </div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label for="vehicle">Assign Vehicle</label>
-        <select id="vehicle" formControlName="vehicle_id" class="form-control">
-          <option value="">None</option>
-          @for (vehicle of vehicles; track vehicle.id) {
-            <option [value]="vehicle.id">{{ vehicle.name }} - {{ vehicle.registrationNumber }}</option>
-          }
-        </select>
-      </div>
+          <div class="form-row">
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Contact Information</mat-label>
+              <input matInput id="contactInfo" formControlName="contactInfo" placeholder="Phone number or email" />
+              <mat-icon matSuffix fontSet="material-icons-outlined">contact_phone</mat-icon>
+              <mat-hint>Primary contact method</mat-hint>
+            </mat-form-field>
 
-      <div class="form-group">
-        <!-- Empty for spacing -->
-      </div>
-    </div>
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Years of Experience</mat-label>
+              <input matInput type="number" id="numberOfExperience" formControlName="numberOfExperience" 
+                     placeholder="Enter years of experience" min="0" />
+              <mat-icon matSuffix fontSet="material-icons-outlined">work_history</mat-icon>
+              <mat-hint>Total professional driving experience</mat-hint>
+              <mat-error *ngIf="driverForm.get('numberOfExperience')?.invalid && driverForm.get('numberOfExperience')?.touched">
+                <span *ngIf="driverForm.get('numberOfExperience')?.errors?.['min']">Experience must be at least 0</span>
+                <span *ngIf="driverForm.get('numberOfExperience')?.errors?.['pattern']">Experience must be a positive integer</span>
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
 
-    <div class="form-actions">
-      <button type="button" (click)="onCancel()" class="cancel-btn">Cancel</button>
-      <button type="submit" [disabled]="loading || driverForm.invalid" class="submit-btn">
-        @if (loading) {
-          <span class="loading-icon">⏳</span>
-          Saving...
-        } @else {
-          <span class="btn-icon">{{ driverId ? '💾' : '👤' }}</span>
-          {{ driverId ? 'Update' : 'Add' }} Driver
-        }
-      </button>
-    </div>
-  </form>
+        <!-- Assignment Section -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <mat-icon class="section-icon" fontSet="material-icons-outlined">directions_car</mat-icon>
+            Vehicle Assignment
+          </h3>
+          
+          <div class="form-row">
+            <mat-form-field class="form-field full-width" appearance="outline">
+              <mat-label>Assign Vehicle</mat-label>
+              <mat-select id="vehicle" formControlName="vehicle_id">
+                <mat-option value="">
+                  <span class="option-placeholder">No vehicle assigned</span>
+                </mat-option>
+                <mat-option *ngFor="let vehicle of vehicles" [value]="vehicle.id" class="vehicle-option">
+                  <div class="vehicle-option-content">
+                    <span class="vehicle-name">{{ vehicle.name }}</span>
+                    <span class="vehicle-registration">{{ vehicle.registrationNumber }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix fontSet="material-icons-outlined">arrow_drop_down</mat-icon>
+              <mat-hint>Select a vehicle to assign to this driver</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="onCancel()" class="cancel-btn">
+            <mat-icon>cancel</mat-icon>
+            Cancel
+          </button>
+          <button mat-raised-button type="submit" [disabled]="loading || driverForm.invalid" class="submit-btn" color="primary">
+            <div class="button-content">
+              <mat-spinner *ngIf="loading" diameter="16" class="button-spinner"></mat-spinner>
+              <mat-icon *ngIf="!loading" class="button-icon">
+                {{ driverId ? 'save' : 'person_add' }}
+              </mat-icon>
+              <span class="button-text">{{ driverId ? 'Update Driver' : 'Add Driver' }}</span>
+            </div>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>
